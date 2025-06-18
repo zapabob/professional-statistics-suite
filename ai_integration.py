@@ -3,6 +3,7 @@
 """
 AI Integration Module
 AI統合モジュール - OpenAI, Google AI Studio, Anthropic, 画像処理, 自然言語処理
+Multi-Platform GPU Support: CUDA / MPS / ROCm
 最新版API対応 (2024年対応)
 """
 
@@ -11,6 +12,7 @@ import base64
 import re
 import json
 import os
+import platform
 from typing import Optional, Dict, Any, List, Union
 from pathlib import Path
 import traceback
@@ -19,6 +21,56 @@ import logging
 # Data processing
 import pandas as pd
 import numpy as np
+
+# Platform and GPU detection
+try:
+    from config import HardwareDetector
+    hardware_detector = HardwareDetector()
+    HARDWARE_DETECTION_AVAILABLE = True
+except ImportError:
+    hardware_detector = None
+    HARDWARE_DETECTION_AVAILABLE = False
+
+# GPU Platform Support
+def get_platform_capabilities() -> Dict[str, Any]:
+    """プラットフォーム機能を取得"""
+    capabilities = {
+        'platform': platform.system(),
+        'architecture': platform.machine(),
+        'gpu_acceleration': False,
+        'gpu_platform': 'cpu',
+        'optimization_level': 'standard'
+    }
+    
+    if HARDWARE_DETECTION_AVAILABLE and hardware_detector:
+        gpu_info = hardware_detector.gpu_info
+        
+        if gpu_info['nvidia']['available']:
+            capabilities.update({
+                'gpu_acceleration': True,
+                'gpu_platform': 'cuda',
+                'optimization_level': 'high',
+                'gpu_devices': gpu_info['nvidia']['devices']
+            })
+        elif gpu_info['apple']['available']:
+            capabilities.update({
+                'gpu_acceleration': True,
+                'gpu_platform': 'mps',
+                'optimization_level': 'apple_silicon',
+                'gpu_devices': gpu_info['apple']['devices']
+            })
+        elif gpu_info['amd']['available']:
+            capabilities.update({
+                'gpu_acceleration': True,
+                'gpu_platform': 'rocm',
+                'optimization_level': 'amd_gpu',
+                'gpu_devices': gpu_info['amd']['devices']
+            })
+    
+    return capabilities
+
+# Platform capabilities
+PLATFORM_CAPABILITIES = get_platform_capabilities()
 
 # AI API clients (オプション)
 try:
@@ -52,6 +104,7 @@ try:
     PYTESSERACT_AVAILABLE = True
 except ImportError:
     PYTESSERACT_AVAILABLE = False
+
 
 try:
     import easyocr
@@ -88,15 +141,18 @@ except ImportError:
     
     ai_config = MockConfig()
 
-# プロンプトテンプレート
+# プロンプトテンプレート（マルチプラットフォーム対応）
 STATISTICAL_ANALYSIS_PROMPTS = {
-    "natural_language_query": "分析要求: {user_query}",
-    "image_data_extraction": "画像からデータを抽出してください。",
+    "natural_language_query": "分析要求: {user_query}\nプラットフォーム情報: {platform_info}",
+    "image_data_extraction": "画像からデータを抽出してください。GPU最適化: {gpu_optimization}",
     "code_generation": """
 データサイエンスの専門家として、以下の要求に基づいて実行可能なPythonコードを生成してください。
 
 データ情報:
 {data_info}
+
+システム情報:
+{platform_info}
 
 ユーザー要求: {user_query}
 
@@ -105,6 +161,7 @@ STATISTICAL_ANALYSIS_PROMPTS = {
 2. 必要に応じてmatplotlib/seabornでビジュアライゼーション
 3. エラーハンドリングを含める
 4. 日本語コメントを追加
+5. 利用可能なGPU最適化を活用（{gpu_platform}）
 
 ```python
 # 生成されたコード
@@ -113,22 +170,30 @@ STATISTICAL_ANALYSIS_PROMPTS = {
 }
 
 class AIStatisticalAnalyzer:
-    """AI統計解析エンジン - 最新API対応版"""
+    """AI統計解析エンジン - マルチプラットフォーム対応版"""
     
     def __init__(self):
         self.analysis_history: List[Dict[str, Any]] = []
         self.logger = logging.getLogger(__name__)
+        self.platform_capabilities = PLATFORM_CAPABILITIES
+        
+        # プラットフォーム最適化ログ
+        self.logger.info(f"AI統計解析エンジン初期化 - プラットフォーム: {self.platform_capabilities['platform']}")
+        self.logger.info(f"GPU最適化: {self.platform_capabilities['gpu_acceleration']} ({self.platform_capabilities['gpu_platform']})")
     
     async def analyze_natural_language_query(self, query: str, data: pd.DataFrame) -> Dict[str, Any]:
-        """自然言語クエリで統計解析"""
+        """自然言語クエリで統計解析（マルチプラットフォーム対応）"""
         try:
+            # プラットフォーム情報の準備
+            platform_info = self._get_platform_context()
+            
             # AI API が利用可能な場合の優先順位で実行
             if OPENAI_AVAILABLE and ai_config.is_api_configured("openai"):
-                result = await self._analyze_with_openai(query, data)
+                result = await self._analyze_with_openai(query, data, platform_info)
             elif ANTHROPIC_AVAILABLE and ai_config.is_api_configured("anthropic"):
-                result = await self._analyze_with_anthropic(query, data)
+                result = await self._analyze_with_anthropic(query, data, platform_info)
             elif GOOGLE_AI_AVAILABLE and ai_config.is_api_configured("google"):
-                result = await self._analyze_with_google(query, data)
+                result = await self._analyze_with_google(query, data, platform_info)
             else:
                 # ローカル解析
                 result = self._analyze_locally(query, data)
@@ -137,17 +202,60 @@ class AIStatisticalAnalyzer:
             self.analysis_history.append({
                 "query": query,
                 "timestamp": pd.Timestamp.now(),
-                "result": result
+                "result": result,
+                "platform_info": platform_info
             })
             
             return result
             
         except Exception as e:
             self.logger.error(f"分析エラー: {str(e)}")
-            return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
+            return {
+                "success": False, 
+                "error": str(e), 
+                "traceback": traceback.format_exc(),
+                "platform_info": self.platform_capabilities
+            }
     
-    async def _analyze_with_openai(self, query: str, data: pd.DataFrame) -> Dict[str, Any]:
-        """OpenAI APIで分析 - 最新API対応"""
+    def _get_platform_context(self) -> Dict[str, Any]:
+        """プラットフォームコンテキストを取得"""
+        context = {
+            'platform': self.platform_capabilities['platform'],
+            'gpu_platform': self.platform_capabilities['gpu_platform'],
+            'gpu_acceleration': self.platform_capabilities['gpu_acceleration'],
+            'optimization_level': self.platform_capabilities['optimization_level']
+        }
+        
+        # プラットフォーム固有の推奨事項
+        if self.platform_capabilities['gpu_platform'] == 'mps':
+            context['recommendations'] = [
+                "Apple Siliconの統合メモリアーキテクチャを活用",
+                "PyTorchのMPSバックエンドを使用可能",
+                "Metal Performance Shadersによる最適化が可能"
+            ]
+        elif self.platform_capabilities['gpu_platform'] == 'cuda':
+            context['recommendations'] = [
+                "NVIDIA CUDAによる高速GPU計算",
+                "Tensor Coresを活用した混合精度計算",
+                "CuPyによる高速数値計算が利用可能"
+            ]
+        elif self.platform_capabilities['gpu_platform'] == 'rocm':
+            context['recommendations'] = [
+                "AMD ROCmによるGPU加速",
+                "OpenCLバックエンドでの計算最適化",
+                "AMD GPU特化の最適化が可能"
+            ]
+        else:
+            context['recommendations'] = [
+                "CPUベースの高速化（NumBA、マルチプロセシング）",
+                "メモリ効率の最適化",
+                "並列処理による性能向上"
+            ]
+        
+        return context
+
+    async def _analyze_with_openai(self, query: str, data: pd.DataFrame, platform_info: Dict[str, Any]) -> Dict[str, Any]:
+        """OpenAI APIで分析 - マルチプラットフォーム対応"""
         try:
             client = openai.OpenAI(api_key=ai_config.openai_api_key)
             
@@ -160,13 +268,18 @@ class AIStatisticalAnalyzer:
             
             prompt = STATISTICAL_ANALYSIS_PROMPTS["code_generation"].format(
                 data_info=data_info,
-                user_query=query
+                platform_info=json.dumps(platform_info, ensure_ascii=False, indent=2),
+                user_query=query,
+                gpu_platform=platform_info['gpu_platform']
             )
             
+            # モデル選択（プラットフォームに応じて）
+            model = "gpt-4o"  # 最新の安定版モデル
+            
             response = client.chat.completions.create(
-                model="gpt-4o",  # 最新の安定版モデル
+                model=model,
                 messages=[
-                    {"role": "system", "content": "あなたは統計分析とデータサイエンスの専門家です。実行可能で安全なPythonコードを生成してください。"},
+                    {"role": "system", "content": f"あなたは統計分析とデータサイエンスの専門家です。{platform_info['gpu_platform']}プラットフォームに最適化された実行可能で安全なPythonコードを生成してください。"},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.1,
@@ -182,18 +295,20 @@ class AIStatisticalAnalyzer:
             return {
                 "success": True,
                 "provider": "openai",
-                "model": "gpt-4o",
+                "model": model,
                 "response": ai_response,
                 "extracted_code": code_matches[0] if code_matches else None,
-                "data_info": data_info
+                "data_info": data_info,
+                "platform_optimization": platform_info,
+                "gpu_accelerated": platform_info['gpu_acceleration']
             }
             
         except Exception as e:
             self.logger.error(f"OpenAI分析エラー: {str(e)}")
             return {"success": False, "error": str(e), "provider": "openai"}
     
-    async def _analyze_with_anthropic(self, query: str, data: pd.DataFrame) -> Dict[str, Any]:
-        """Anthropic APIで分析"""
+    async def _analyze_with_anthropic(self, query: str, data: pd.DataFrame, platform_info: Dict[str, Any]) -> Dict[str, Any]:
+        """Anthropic APIで分析 - マルチプラットフォーム対応"""
         try:
             client = anthropic.Anthropic(api_key=ai_config.anthropic_api_key)
             
@@ -206,7 +321,9 @@ class AIStatisticalAnalyzer:
             
             prompt = STATISTICAL_ANALYSIS_PROMPTS["code_generation"].format(
                 data_info=data_info,
-                user_query=query
+                platform_info=json.dumps(platform_info, ensure_ascii=False, indent=2),
+                user_query=query,
+                gpu_platform=platform_info['gpu_platform']
             )
             
             response = client.messages.create(
@@ -231,14 +348,16 @@ class AIStatisticalAnalyzer:
                 "model": "claude-3-5-sonnet-20241022",
                 "response": ai_response,
                 "extracted_code": code_matches[0] if code_matches else None,
-                "data_info": data_info
+                "data_info": data_info,
+                "platform_optimization": platform_info,
+                "gpu_accelerated": platform_info['gpu_acceleration']
             }
             
         except Exception as e:
             self.logger.error(f"Anthropic分析エラー: {str(e)}")
             return {"success": False, "error": str(e), "provider": "anthropic"}
     
-    async def _analyze_with_google(self, query: str, data: pd.DataFrame) -> Dict[str, Any]:
+    async def _analyze_with_google(self, query: str, data: pd.DataFrame, platform_info: Dict[str, Any]) -> Dict[str, Any]:
         """Google AI Studioで分析"""
         try:
             genai.configure(api_key=ai_config.google_api_key)
@@ -253,7 +372,9 @@ class AIStatisticalAnalyzer:
             
             prompt = STATISTICAL_ANALYSIS_PROMPTS["code_generation"].format(
                 data_info=data_info,
-                user_query=query
+                platform_info=json.dumps(platform_info, ensure_ascii=False, indent=2),
+                user_query=query,
+                gpu_platform=platform_info['gpu_platform']
             )
             
             response = model.generate_content(
@@ -276,7 +397,9 @@ class AIStatisticalAnalyzer:
                 "model": "gemini-1.5-pro",
                 "response": ai_response,
                 "extracted_code": code_matches[0] if code_matches else None,
-                "data_info": data_info
+                "data_info": data_info,
+                "platform_optimization": platform_info,
+                "gpu_accelerated": platform_info['gpu_acceleration']
             }
             
         except Exception as e:

@@ -36,12 +36,13 @@ class PerformanceProfile:
     parallel_processing: bool
     cache_enabled: bool
     description: str
+    gpu_platform: str = "auto"  # "cuda", "mps", "rocm", "cpu"
 
 class SPSSGradeConfig:
-    """SPSS級設定管理クラス"""
+    """SPSS級設定管理クラス - Multi-Platform Support"""
     
     def __init__(self):
-        # パフォーマンスプロファイル定義
+        # パフォーマンスプロファイル定義（マルチプラットフォーム対応）
         self.performance_profiles = {
             'ultra_high': PerformanceProfile(
                 name='Ultra High Performance',
@@ -52,7 +53,8 @@ class SPSSGradeConfig:
                 optimization_level='maximum',
                 parallel_processing=True,
                 cache_enabled=True,
-                description='Maximum performance for large-scale analysis (64GB+ RAM)'
+                gpu_platform='auto',
+                description='Maximum performance for large-scale analysis (64GB+ RAM) - Supports CUDA/MPS/ROCm'
             ),
             'high': PerformanceProfile(
                 name='High Performance',
@@ -63,7 +65,8 @@ class SPSSGradeConfig:
                 optimization_level='high',
                 parallel_processing=True,
                 cache_enabled=True,
-                description='High performance for medium to large datasets (32GB+ RAM)'
+                gpu_platform='auto',
+                description='High performance for medium to large datasets (32GB+ RAM) - Multi-GPU Support'
             ),
             'standard': PerformanceProfile(
                 name='Standard Performance',
@@ -74,7 +77,8 @@ class SPSSGradeConfig:
                 optimization_level='medium',
                 parallel_processing=True,
                 cache_enabled=True,
-                description='Balanced performance for standard workloads (16GB+ RAM)'
+                gpu_platform='auto',
+                description='Balanced performance for standard workloads (16GB+ RAM) - Apple Silicon Optimized'
             ),
             'conservative': PerformanceProfile(
                 name='Conservative',
@@ -85,11 +89,12 @@ class SPSSGradeConfig:
                 optimization_level='low',
                 parallel_processing=False,
                 cache_enabled=False,
-                description='Conservative settings for limited resources (8GB+ RAM)'
+                gpu_platform='cpu',
+                description='Conservative settings for limited resources (8GB+ RAM) - CPU Only'
             )
         }
         
-        # データ処理設定
+        # データ処理設定（マルチプラットフォーム）
         self.data_processing_config = {
             'chunk_size': 100000,  # pandas chunk size
             'use_polars': True,    # Use Polars for large datasets
@@ -97,10 +102,16 @@ class SPSSGradeConfig:
             'streaming_threshold': 1e6,  # Switch to streaming for >1M rows
             'compression': 'snappy',     # Default compression
             'parquet_engine': 'pyarrow', # Parquet engine
-            'cache_directory': Path.home() / '.professional_stats_suite' / 'cache'
+            'cache_directory': Path.home() / '.professional_stats_suite' / 'cache',
+            'gpu_acceleration': {
+                'cuda': True,   # NVIDIA CUDA
+                'mps': True,    # Apple Metal Performance Shaders
+                'rocm': True,   # AMD ROCm
+                'auto_detect': True
+            }
         }
         
-        # 統計解析設定
+        # 統計解析設定（GPU プラットフォーム対応）
         self.statistical_config = {
             'significance_level': 0.05,
             'confidence_interval': 0.95,
@@ -111,10 +122,13 @@ class SPSSGradeConfig:
             'random_state': 42,
             'use_gpu_stats': True,  # GPU acceleration for statistics
             'parallel_bootstrap': True,
-            'robust_methods': True  # Use robust statistical methods by default
+            'robust_methods': True,  # Use robust statistical methods by default
+            'gpu_fallback': True,   # CPU fallback if GPU unavailable
+            'metal_optimization': True,  # Apple Metal optimization
+            'rocm_optimization': True    # AMD ROCm optimization
         }
         
-        # 可視化設定
+        # 可視化設定（プラットフォーム特化）
         self.visualization_config = {
             'dpi': 300,
             'figure_size': (12, 8),
@@ -124,21 +138,31 @@ class SPSSGradeConfig:
             'save_format': 'png',
             'webgl': True,  # Use WebGL for faster rendering
             'max_points': 100000,  # Maximum points for scatter plots
-            'use_datashader': True  # Use Datashader for big data visualization
+            'use_datashader': True,  # Use Datashader for big data visualization
+            'platform_optimization': {
+                'apple_silicon': True,   # Optimize for M1/M2
+                'amd_gpu': True,         # Optimize for AMD GPUs
+                'nvidia_gpu': True       # Optimize for NVIDIA GPUs
+            }
         }
 
 class HardwareDetector:
-    """ハードウェア検出・最適化クラス"""
+    """ハードウェア検出・最適化クラス（M1/M2/ROCm対応）"""
     
     def __init__(self):
         self.platform = platform.system()
         self.architecture = platform.machine()
         self.python_version = platform.python_version()
         
-        # Hardware information
+        # Hardware information (Multi-platform)
         self.gpu_info = self._detect_gpu()
         self.cpu_info = self._detect_cpu()
         self.memory_info = self._detect_memory()
+        
+        # Platform-specific optimizations
+        self.apple_silicon_info = self._detect_apple_silicon()
+        self.amd_gpu_info = self._detect_amd_gpu()
+        self.intel_gpu_info = self._detect_intel_gpu()
         
         # SPSS-grade configuration
         self.spss_config = SPSSGradeConfig()
@@ -241,50 +265,251 @@ class HardwareDetector:
         return config
 
     def _detect_gpu(self) -> Dict[str, Any]:
-        """GPU検出（NVIDIA RTX 30/40/50, Apple Silicon, Intel, AMD）"""
+        """GPU検出（CUDA/MPS/ROCm対応）"""
         gpu_info = {
             'nvidia': {'available': False, 'devices': [], 'cuda_version': None},
-            'apple_metal': {'available': False, 'devices': []},
-            'intel': {'available': False, 'devices': []},
-            'amd': {'available': False, 'devices': []}
+            'amd': {'available': False, 'devices': [], 'rocm_version': None},
+            'apple': {'available': False, 'devices': [], 'metal_version': None},
+            'intel': {'available': False, 'devices': [], 'level_zero_version': None},
+            'primary_platform': 'cpu',
+            'recommended_backend': 'cpu'
         }
         
-        # NVIDIA GPU detection
+        # NVIDIA CUDA Detection
         try:
             import torch
             if torch.cuda.is_available():
                 gpu_info['nvidia']['available'] = True
                 gpu_info['nvidia']['cuda_version'] = torch.version.cuda
+                gpu_info['primary_platform'] = 'cuda'
+                gpu_info['recommended_backend'] = 'cuda'
                 
                 for i in range(torch.cuda.device_count()):
-                    device_props = torch.cuda.get_device_properties(i)
-                    gpu_info['nvidia']['devices'].append({
-                        'name': device_props.name,
-                        'compute_capability': f"{device_props.major}.{device_props.minor}",
-                        'memory_gb': device_props.total_memory / (1024**3),
-                        'multiprocessor_count': device_props.multi_processor_count,
-                        'is_rtx_30_series': 'RTX 30' in device_props.name or 'RTX 31' in device_props.name or 'RTX 32' in device_props.name,
-                        'is_rtx_40_series': 'RTX 40' in device_props.name or 'RTX 41' in device_props.name,
-                        'is_rtx_50_series': 'RTX 50' in device_props.name or 'RTX 51' in device_props.name,
-                        'optimization_level': self._get_nvidia_optimization_level(device_props.name),
-                        'tensor_cores': self._has_tensor_cores(device_props.name),
-                        'spss_performance_rating': self._get_spss_performance_rating(device_props.name)
-                    })
-        except ImportError:
-            pass
+                    props = torch.cuda.get_device_properties(i)
+                    device_info = {
+                        'id': i,
+                        'name': props.name,
+                        'memory_gb': props.total_memory / (1024**3),
+                        'compute_capability': f"{props.major}.{props.minor}",
+                        'tensor_cores': self._has_tensor_cores(props.name),
+                        'spss_rating': self._get_spss_performance_rating(props.name)
+                    }
+                    gpu_info['nvidia']['devices'].append(device_info)
+        except Exception as e:
+            print(f"CUDA detection failed: {e}")
         
-        # Apple Metal detection (M1, M2, M3+ chips)
+        # Apple Metal Performance Shaders (MPS) Detection
         if self.platform == "Darwin":
             try:
-                # Check for Apple Silicon
-                if self.architecture in ['arm64', 'aarch64']:
-                    gpu_info['apple_metal']['available'] = True
-                    chip_info = self._detect_apple_chip()
-                    gpu_info['apple_metal']['devices'].append(chip_info)
-            except Exception:
-                pass
+                import torch
+                if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+                    gpu_info['apple']['available'] = True
+                    gpu_info['apple']['metal_version'] = self._get_metal_version()
+                    
+                    # Apple Silicon GPU detection
+                    apple_gpu_info = self.apple_silicon_info
+                    if apple_gpu_info['is_apple_silicon']:
+                        gpu_info['apple']['devices'] = [{
+                            'id': 0,
+                            'name': apple_gpu_info['chip_name'],
+                            'gpu_cores': apple_gpu_info['gpu_cores'],
+                            'unified_memory': apple_gpu_info['unified_memory'],
+                            'spss_rating': self._get_apple_spss_rating(apple_gpu_info['chip_name'])
+                        }]
+                        
+                        if gpu_info['primary_platform'] == 'cpu':
+                            gpu_info['primary_platform'] = 'mps'
+                            gpu_info['recommended_backend'] = 'mps'
+            except Exception as e:
+                print(f"Apple MPS detection failed: {e}")
+        
+        # AMD ROCm Detection
+        try:
+            import torch
+            # ROCm環境での検出
+            if hasattr(torch, 'cuda') and torch.cuda.is_available():
+                # Check if this is actually ROCm
+                device_name = torch.cuda.get_device_name(0)
+                if any(amd_identifier in device_name.lower() for amd_identifier in 
+                       ['radeon', 'vega', 'navi', 'rdna', 'gfx']):
+                    gpu_info['amd']['available'] = True
+                    gpu_info['amd']['rocm_version'] = self._get_rocm_version()
+                    
+                    for i in range(torch.cuda.device_count()):
+                        props = torch.cuda.get_device_properties(i)
+                        if any(amd_id in props.name.lower() for amd_id in 
+                               ['radeon', 'vega', 'navi', 'rdna']):
+                            device_info = {
+                                'id': i,
+                                'name': props.name,
+                                'memory_gb': props.total_memory / (1024**3),
+                                'architecture': self._get_amd_architecture(props.name),
+                                'spss_rating': self._get_amd_spss_rating(props.name)
+                            }
+                            gpu_info['amd']['devices'].append(device_info)
+                    
+                    if gpu_info['primary_platform'] == 'cpu':
+                        gpu_info['primary_platform'] = 'rocm'
+                        gpu_info['recommended_backend'] = 'rocm'
+        except Exception as e:
+            print(f"AMD ROCm detection failed: {e}")
         
         return gpu_info
+    
+    def _get_metal_version(self) -> str:
+        """Metal Performance Shaders version取得"""
+        try:
+            result = subprocess.run(['system_profiler', 'SPDisplaysDataType'], 
+                                  capture_output=True, text=True)
+            if result.returncode == 0:
+                # Parse Metal version from system profiler
+                output = result.stdout
+                if 'Metal Support' in output:
+                    return "Available"
+            return "Unknown"
+        except Exception:
+            return "Unknown"
+    
+    def _get_rocm_version(self) -> str:
+        """ROCm version取得"""
+        try:
+            result = subprocess.run(['rocm-smi', '--version'], 
+                                  capture_output=True, text=True)
+            if result.returncode == 0:
+                return result.stdout.strip()
+            return "Unknown"
+        except Exception:
+            return "Unknown"
+    
+    def _get_amd_architecture(self, gpu_name: str) -> str:
+        """AMD GPU architecture取得"""
+        gpu_name_lower = gpu_name.lower()
+        if 'rdna3' in gpu_name_lower or 'rx 7' in gpu_name_lower:
+            return 'RDNA3'
+        elif 'rdna2' in gpu_name_lower or 'rx 6' in gpu_name_lower:
+            return 'RDNA2'
+        elif 'rdna' in gpu_name_lower or 'rx 5' in gpu_name_lower:
+            return 'RDNA'
+        elif 'vega' in gpu_name_lower:
+            return 'Vega'
+        else:
+            return 'Unknown'
+    
+    def _get_amd_spss_rating(self, gpu_name: str) -> str:
+        """AMD GPU SPSS互換性評価"""
+        gpu_name_lower = gpu_name.lower()
+        if any(high_end in gpu_name_lower for high_end in ['rx 7900', 'rx 6900', 'vega 64']):
+            return 'Excellent'
+        elif any(mid_high in gpu_name_lower for mid_high in ['rx 7800', 'rx 6800', 'rx 6700']):
+            return 'Very Good'
+        elif any(mid in gpu_name_lower for mid_high in ['rx 7600', 'rx 6600', 'rx 5700']):
+            return 'Good'
+        else:
+            return 'Basic'
+    
+    def _get_apple_spss_rating(self, chip_name: str) -> str:
+        """Apple Silicon SPSS互換性評価"""
+        chip_lower = chip_name.lower()
+        if 'm2 ultra' in chip_lower or 'm1 ultra' in chip_lower:
+            return 'Excellent'
+        elif 'm2 max' in chip_lower or 'm1 max' in chip_lower:
+            return 'Very Good'
+        elif 'm2 pro' in chip_lower or 'm1 pro' in chip_lower:
+            return 'Good'
+        elif 'm2' in chip_lower or 'm1' in chip_lower:
+            return 'Good'
+        else:
+            return 'Basic'
+
+    def _detect_apple_silicon(self) -> Dict[str, Any]:
+        """Apple Silicon検出"""
+        apple_info = {
+            'is_apple_silicon': False,
+            'chip_name': 'Unknown',
+            'gpu_cores': 0,
+            'unified_memory': 0,
+            'neural_engine': False
+        }
+        
+        if self.platform == "Darwin":
+            try:
+                # Check if running on Apple Silicon
+                result = subprocess.run(['sysctl', '-n', 'machdep.cpu.brand_string'], 
+                                      capture_output=True, text=True)
+                if result.returncode == 0:
+                    cpu_brand = result.stdout.strip()
+                    if 'Apple' in cpu_brand:
+                        apple_info['is_apple_silicon'] = True
+                        apple_info['chip_name'] = cpu_brand
+                        apple_info['neural_engine'] = True
+                        
+                        # Get GPU core count (approximate based on known configurations)
+                        if 'M1 Ultra' in cpu_brand:
+                            apple_info['gpu_cores'] = 64
+                        elif 'M1 Max' in cpu_brand:
+                            apple_info['gpu_cores'] = 32
+                        elif 'M1 Pro' in cpu_brand:
+                            apple_info['gpu_cores'] = 16
+                        elif 'M2 Ultra' in cpu_brand:
+                            apple_info['gpu_cores'] = 76
+                        elif 'M2 Max' in cpu_brand:
+                            apple_info['gpu_cores'] = 38
+                        elif 'M2 Pro' in cpu_brand:
+                            apple_info['gpu_cores'] = 19
+                        elif 'M2' in cpu_brand:
+                            apple_info['gpu_cores'] = 10
+                        elif 'M1' in cpu_brand:
+                            apple_info['gpu_cores'] = 8
+                        
+                        # Get unified memory
+                        memory_result = subprocess.run(['sysctl', '-n', 'hw.memsize'], 
+                                                     capture_output=True, text=True)
+                        if memory_result.returncode == 0:
+                            apple_info['unified_memory'] = int(memory_result.stdout.strip()) // (1024**3)
+            except Exception as e:
+                print(f"Apple Silicon detection failed: {e}")
+        
+        return apple_info
+    
+    def _detect_amd_gpu(self) -> Dict[str, Any]:
+        """AMD GPU詳細検出"""
+        amd_info = {
+            'available': False,
+            'rocm_installed': False,
+            'devices': [],
+            'opencl_support': False
+        }
+        
+        try:
+            # Check for ROCm installation
+            rocm_result = subprocess.run(['which', 'rocm-smi'], 
+                                       capture_output=True, text=True)
+            if rocm_result.returncode == 0:
+                amd_info['rocm_installed'] = True
+                
+                # Get device information
+                smi_result = subprocess.run(['rocm-smi', '--showid'], 
+                                          capture_output=True, text=True)
+                if smi_result.returncode == 0:
+                    amd_info['available'] = True
+                    # Parse device information from rocm-smi output
+                    # This is a simplified parsing - could be enhanced
+                    amd_info['devices'] = ['AMD GPU Device']
+        except Exception as e:
+            print(f"AMD GPU detection failed: {e}")
+        
+        return amd_info
+    
+    def _detect_intel_gpu(self) -> Dict[str, Any]:
+        """Intel GPU検出（Future support）"""
+        intel_info = {
+            'available': False,
+            'level_zero_installed': False,
+            'devices': []
+        }
+        
+        # Future implementation for Intel GPU support
+        return intel_info
     
     def _has_tensor_cores(self, gpu_name: str) -> bool:
         """Tensor Cores対応確認"""
@@ -301,149 +526,6 @@ class HardwareDetector:
             return "SPSS-Compatible"  # SPSS互換
         else:
             return "Basic"            # 基本レベル
-    
-    def _detect_apple_chip(self) -> Dict[str, Any]:
-        """Apple Silicon チップ検出"""
-        try:
-            # Get chip information using system_profiler
-            result = subprocess.run(['system_profiler', 'SPHardwareDataType'], 
-                                   capture_output=True, text=True)
-            output = result.stdout
-            
-            chip_name = "Unknown Apple Silicon"
-            performance_cores = 0
-            efficiency_cores = 0
-            neural_engine = False
-            
-            if "Apple M" in output:
-                lines = output.split('\n')
-                for line in lines:
-                    if "Chip:" in line:
-                        chip_name = line.split(":")[-1].strip()
-                    elif "Total Number of Cores:" in line:
-                        cores_info = line.split(":")[-1].strip()
-                        if "(" in cores_info:
-                            # Parse format like "8 (4 performance and 4 efficiency)"
-                            total_cores = int(cores_info.split()[0])
-                            if "performance" in cores_info and "efficiency" in cores_info:
-                                parts = cores_info.split("(")[1].split(")")[0]
-                                perf_part = [p for p in parts.split(" and ") if "performance" in p][0]
-                                eff_part = [p for p in parts.split(" and ") if "efficiency" in p][0]
-                                performance_cores = int(perf_part.split()[0])
-                                efficiency_cores = int(eff_part.split()[0])
-            
-            # Determine optimization level based on chip
-            optimization_level = "standard"
-            spss_rating = "Basic"
-            if "M3" in chip_name:
-                optimization_level = "maximum"
-                neural_engine = True
-                spss_rating = "Superior to SPSS"
-            elif "M2" in chip_name:
-                optimization_level = "high"
-                neural_engine = True
-                spss_rating = "SPSS-Grade"
-            elif "M1" in chip_name:
-                optimization_level = "medium"
-                neural_engine = True
-                spss_rating = "SPSS-Compatible"
-            
-            return {
-                'name': chip_name,
-                'performance_cores': performance_cores,
-                'efficiency_cores': efficiency_cores,
-                'neural_engine': neural_engine,
-                'optimization_level': optimization_level,
-                'metal_support': True,
-                'mlx_compatible': "M2" in chip_name or "M3" in chip_name,
-                'spss_performance_rating': spss_rating,
-                'unified_memory': True,
-                'tensor_processing': neural_engine
-            }
-            
-        except Exception:
-            return {
-                'name': 'Apple Silicon (Unknown)',
-                'optimization_level': 'medium',
-                'metal_support': True,
-                'mlx_compatible': False,
-                'spss_performance_rating': 'Basic'
-            }
-    
-    def _get_nvidia_optimization_level(self, gpu_name: str) -> str:
-        """NVIDIA GPU最適化レベル決定"""
-        if any(series in gpu_name for series in ['RTX 50', 'RTX 51']):
-            return "maximum"  # RTX 50 series
-        elif any(series in gpu_name for series in ['RTX 40', 'RTX 41']):
-            return "high"     # RTX 40 series
-        elif any(series in gpu_name for series in ['RTX 30', 'RTX 31', 'RTX 32']):
-            return "high"     # RTX 30 series
-        elif any(series in gpu_name for series in ['RTX 20', 'GTX 16']):
-            return "medium"   # RTX 20/GTX 16 series
-        else:
-            return "standard" # Other GPUs
-    
-    def _detect_cpu(self) -> Dict[str, Any]:
-        """CPU情報検出"""
-        cpu_info = {
-            'cores': os.cpu_count(),
-            'architecture': self.architecture,
-            'platform': self.platform
-        }
-        
-        try:
-            import psutil
-            cpu_info['frequency_mhz'] = psutil.cpu_freq().max if psutil.cpu_freq() else 0
-            cpu_info['physical_cores'] = psutil.cpu_count(logical=False)
-            cpu_info['logical_cores'] = psutil.cpu_count(logical=True)
-            cpu_info['spss_performance_rating'] = self._get_cpu_spss_rating(cpu_info)
-        except ImportError:
-            pass
-        
-        return cpu_info
-    
-    def _get_cpu_spss_rating(self, cpu_info: Dict[str, Any]) -> str:
-        """CPU SPSS性能レーティング"""
-        cores = cpu_info.get('physical_cores', cpu_info.get('cores', 1))
-        frequency = cpu_info.get('frequency_mhz', 0)
-        
-        if cores >= 16 and frequency >= 3000:
-            return "Superior to SPSS"
-        elif cores >= 8 and frequency >= 2500:
-            return "SPSS-Grade"
-        elif cores >= 4 and frequency >= 2000:
-            return "SPSS-Compatible"
-        else:
-            return "Basic"
-    
-    def _detect_memory(self) -> Dict[str, Any]:
-        """メモリ情報検出"""
-        memory_info = {'total_gb': 0, 'available_gb': 0}
-        
-        try:
-            import psutil
-            memory = psutil.virtual_memory()
-            memory_info = {
-                'total_gb': memory.total / (1024**3),
-                'available_gb': memory.available / (1024**3),
-                'percent_used': memory.percent,
-                'spss_performance_rating': self._get_memory_spss_rating(memory.total / (1024**3))
-            }
-        except ImportError:
-            pass
-        
-        return memory_info
-    
-    def _get_memory_spss_rating(self, total_gb: float) -> str:
-        """メモリ SPSS性能レーティング"""
-        if total_gb >= 64:
-            return "Superior to SPSS"
-        elif total_gb >= 32:
-            return "SPSS-Grade"
-        elif total_gb >= 16:
-            return "SPSS-Compatible"
-        else:
-            return "Basic"
     
     def _determine_optimal_settings(self) -> Dict[str, Any]:
         """最適設定決定"""
@@ -480,8 +562,8 @@ class HardwareDetector:
                 })
         
         # Apple Silicon optimization
-        elif self.gpu_info['apple_metal']['available']:
-            apple_device = self.gpu_info['apple_metal']['devices'][0]
+        elif self.gpu_info['apple']['available']:
+            apple_device = self.gpu_info['apple']['devices'][0]
             if apple_device['optimization_level'] == 'maximum':
                 settings.update({
                     'metal_acceleration': True,
@@ -519,8 +601,8 @@ class HardwareDetector:
         
         if self.gpu_info['nvidia']['available']:
             gpu_rating = self.gpu_info['nvidia']['devices'][0].get('spss_performance_rating', 'Basic')
-        elif self.gpu_info['apple_metal']['available']:
-            gpu_rating = self.gpu_info['apple_metal']['devices'][0].get('spss_performance_rating', 'Basic')
+        elif self.gpu_info['apple']['available']:
+            gpu_rating = self.gpu_info['apple']['devices'][0].get('spss_performance_rating', 'Basic')
         
         ratings = [gpu_rating, cpu_rating, memory_rating]
         
@@ -545,7 +627,7 @@ class HardwareDetector:
         elif memory_gb < 32:
             recommendations.append("🚀 メモリを32GB以上に増設するとSPSS級性能が実現できます")
         
-        if not self.gpu_info['nvidia']['available'] and not self.gpu_info['apple_metal']['available']:
+        if not self.gpu_info['nvidia']['available'] and not self.gpu_info['apple']['available']:
             recommendations.append("⚡ GPU（RTX 30/40/50シリーズまたはApple Silicon M2+）の導入で大幅な性能向上が期待できます")
         
         if self.gpu_info['nvidia']['available']:
@@ -652,7 +734,7 @@ class AIConfig:
             'machine_learning': True,
             'deep_learning': True,
             'big_data_processing': True,
-            'gpu_acceleration': self.hardware.gpu_info['nvidia']['available'] or self.hardware.gpu_info['apple_metal']['available'],
+            'gpu_acceleration': self.hardware.gpu_info['nvidia']['available'] or self.hardware.gpu_info['apple']['available'],
             'parallel_computing': True,
             'automated_reporting': True,
             'interactive_visualization': True,
@@ -739,10 +821,10 @@ def get_hardware_summary() -> str:
     # GPU info
     if hardware_detector.gpu_info['nvidia']['available']:
         device = hardware_detector.gpu_info['nvidia']['devices'][0]
-        summary.append(f"🚀 GPU: {device['name']} ({device['spss_performance_rating']})")
-    elif hardware_detector.gpu_info['apple_metal']['available']:
-        device = hardware_detector.gpu_info['apple_metal']['devices'][0]
-        summary.append(f"🚀 Apple Silicon: {device['name']} ({device['spss_performance_rating']})")
+        summary.append(f"🚀 GPU: {device['name']} ({device['spss_rating']})")
+    elif hardware_detector.gpu_info['apple']['available']:
+        device = hardware_detector.gpu_info['apple']['devices'][0]
+        summary.append(f"🚀 Apple Silicon: {device['name']} ({device['spss_rating']})")
     else:
         summary.append("⚡ GPU: 未検出 (RTX 30/40/50またはApple Silicon推奨)")
     
