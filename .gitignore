@@ -1,10 +1,16 @@
-# バイトコードとキャッシュファイル
+# ================================================
+# Professional Statistics Suite - .gitignore
+# Enterprise-Grade Statistical Analysis Platform
+# ================================================
+
+# ================================================
+# Python
+# ================================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# 配布用ファイル
+.Python
 build/
 develop-eggs/
 dist/
@@ -27,7 +33,11 @@ MANIFEST
 *.manifest
 *.spec
 
-# 単体テスト・カバレッジ
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -42,178 +52,162 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# 翻訳関連
-*.mo
-*.pot
+# ================================================
+# Statistical Analysis & Data Files
+# ================================================
+# Large datasets (exclude from repo)
+*.csv
+*.xlsx
+*.xls
+*.tsv
+*.dat
+*.sav
+*.dta
+*.rda
+*.rds
 
-# Django関連
+# Statistical output files
+*.out
 *.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.toc
 
-# Flask関連
-instance/
-.webassets-cache
+# R files (if using R integration)
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj.user/
 
-# Scrapy関連
-.scrapy
+# SPSS files
+*.spo
+*.spv
 
-# ドキュメント
-docs/_build/
+# SAS files
+*.sas7bdat
+*.sas7bcat
 
-# PyBuilder
-.pybuilder/
-target/
+# ================================================
+# Data Processing & Temporary Files
+# ================================================
+# Temporary data processing files
+temp/
+tmp/
+temporary/
+*.tmp
+*.temp
+*.bak
+*.backup
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Checkpoints and cache
+checkpoints/*.pkl
+checkpoints/*.json
+checkpoints/*.h5
+*.checkpoint
 
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-Pipfile.lock
-
-# poetry
-poetry.lock
-
-# pdm
-.pdm.toml
-.pdm-python
-.pdm-build/
-
-# PEP 582
-__pypackages__/
-
-# Celery関連
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath関連
-*.sage.py
-
-# 環境変数ファイル
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder関連
-.spyderproject
-.spyproject
-
-# Rope関連
-.ropeproject
-
-# mkdocs関連
-/site
-
-# mypy関連
+# Cache directories
+.cache/
+cache/
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-# Pyre関連
-.pyre/
-
-# pytype関連
-.pytype/
-
-# Cython関連
-cython_debug/
-
-# PyCharm関連
-.idea/
-
-# 機械学習・データサイエンス関連
-# データファイル
-*.csv
-*.json
-*.pkl
-*.pickle
+# ================================================
+# Machine Learning & AI
+# ================================================
+# Model files
 *.h5
 *.hdf5
-*.parquet
-*.feather
-*.msgpack
-*.npz
-*.npy
-
-# モデルファイル
+*.pkl
+*.pickle
+*.joblib
 *.model
 *.pt
 *.pth
-*.ckpt
-*.pb
-*.tflite
 *.onnx
-*.joblib
 
-# TensorBoard関連
-runs/
-logs/
-tensorboard/
-tb_logs/
+# TensorFlow
+*.pb
+saved_model/
+*.ckpt
+*.meta
+*.index
 
-# MLflow関連
+# PyTorch
+lightning_logs/
 mlruns/
-.mlflow/
-
-# Weights & Biases関連
 wandb/
 
-# DVC関連
-.dvc
-.dvcignore
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
 
-# Optuna関連
-optuna.db
+# ================================================
+# Environment & Configuration
+# ================================================
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.ENV/
 
-# CUDA関連
-*.cubin
-*.fatbin
-*.ptx
+# Environment variables
+.env
+.env.local
+.env.*.local
 
-# データセット・大容量ファイル
-datasets/
-data/
-raw_data/
-processed_data/
-images/
-videos/
-audio/
-*.zip
-*.tar.gz
-*.rar
-*.7z
+# API keys and secrets
+secrets.json
+api_keys.txt
+*.key
+*.pem
 
-# チェックポイント・バックアップファイル
-checkpoints/
-backup/
-backups/
-*.backup
-*.bak
-*.tmp
-*.temp
-saved_models/
-model_checkpoints/
+# ================================================
+# IDE & Editor
+# ================================================
+# VSCode
+.vscode/
+*.code-workspace
 
-# GPUメモリダンプ
-*.gpu
-*.cuda
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
 
-# Windows関連
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ================================================
+# System Files
+# ================================================
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
 ehthumbs.db
-Desktop.ini
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
 $RECYCLE.BIN/
 *.cab
 *.msi
@@ -222,72 +216,196 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 
-# Visual Studio Code関連
-.vscode/
-*.code-workspace
-
-# Cursor関連
-.specstory/
-
-# 出力ファイル
-output/
-results/
-experiments/
-plots/
-figures/
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
-*.pdf
-*.eps
-
-# 設定ファイル
-config.ini
-settings.json
-*.conf
-*.cfg
-
-# ログファイル
-*.log
-*.out
-*.err
-
-# セッション管理ファイル
-session_*.json
-session_*.pkl
-recovery_*.json
-
-# 一時ファイル
-temp/
-tmp/
-cache/
-.cache/
-
-# システムファイル
+# macOS
 .DS_Store
-.directory
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
-# IDE・エディタ関連
-*.swp
-*.swo
+# Linux
 *~
-.project
-.pydevproject
+.directory
+.Trash-*
+.nfs*
 
-# 証明書・キー
-*.pem
-*.key
-*.crt
-*.cert
+# ================================================
+# Logs & Reports
+# ================================================
+# Application logs
+logs/*.log
+logs/*.txt
+*.log.*
 
-# API キー
-api_keys.txt
-credentials.json
-secrets.yaml
+# Analysis reports (generated)
+reports/*.pdf
+reports/*.html
+reports/*.docx
+reports/*.png
+reports/*.jpg
+reports/*.svg
 
-# データベース
+# Profiling reports
+*.prof
+*.cprof
+
+# ================================================
+# Web Dashboard & Assets
+# ================================================
+# Static assets
+static/uploads/
+static/generated/
+media/uploads/
+
+# Node.js (if using)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ================================================
+# Database & Storage
+# ================================================
+# SQLite databases
 *.db
 *.sqlite
-*.sqlite3 
+*.sqlite3
+
+# Database dumps
+*.sql
+*.dump
+
+# ================================================
+# Build & Distribution
+# ================================================
+# Build artifacts
+build/
+dist/
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# Compiled extensions
+*.dll
+*.dylib
+*.so.*
+
+# ================================================
+# Security & Sensitive Data
+# ================================================
+# Credentials
+credentials.json
+token.json
+*.crt
+*.p12
+
+# License files (generated)
+license.dat
+activation.key
+
+# ================================================
+# Custom Project Directories
+# ================================================
+# User data directories
+user_data/
+personal/
+private/
+
+# Large backup files
+backup/*.tar.gz
+backup/*.zip
+backup/large_*
+
+# GPU cache
+.nv_cache/
+.cuda_cache/
+
+# ================================================
+# Analysis Outputs (Keep structure, ignore content)
+# ================================================
+# Keep directory structure but ignore large files
+checkpoints/*
+!checkpoints/.gitkeep
+!checkpoints/README.md
+
+backup/*
+!backup/.gitkeep
+!backup/README.md
+
+logs/*
+!logs/.gitkeep
+!logs/README.md
+
+reports/*
+!reports/.gitkeep
+!reports/README.md
+
+# ================================================
+# Development & Testing
+# ================================================
+# Test outputs
+test_results/
+test_data/generated/
+benchmark_results/
+
+# Profiling
+.prof/
+profile_*.txt
+
+# Documentation build
+docs/_build/
+docs/.doctrees/
+
+# ================================================
+# Version Control
+# ================================================
+# Git
+.git/
+*.orig
+*.rej
+
+# Mercurial
+.hg/
+.hgignore
+.hgsigs
+.hgsub
+.hgsubstate
+.hgtags
+
+# ================================================
+# Misc
+# ================================================
+# Temporary editor files
+*.swp
+*.swo
+*.tmp
+*.temp
+*~
+
+# Large media files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.mp3
+*.wav
+
+# Compressed files
+*.tar
+*.gz
+*.bz2
+*.xz
+*.lzma 
