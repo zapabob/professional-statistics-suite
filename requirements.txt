@@ -117,6 +117,12 @@ dask[complete]>=2023.10.0
 ray>=2.8.0
 multiprocessing-logging>=0.3.4
 
+# AMD ROCm GPU対応 (Linux)
+torch-audio; platform_system=="Linux"
+
+# Intel Extension for PyTorch (Intel GPU support)
+intel-extension-for-pytorch>=2.1.0; platform_system=="Windows" or platform_system=="Linux"
+
 # Distributed computing
 pyspark>=3.5.0
 mpi4py>=3.1.0; platform_system=="Linux"
@@ -125,6 +131,9 @@ mpi4py>=3.1.0; platform_system=="Linux"
 psutil>=5.9.0
 memory-profiler>=0.61.0
 pympler>=0.9
+
+# Hardware detection
+py-cpuinfo>=9.0.0
 
 # ================================================
 # Enterprise-Grade Visualization (SPSS級)
@@ -343,26 +352,13 @@ wmi>=1.5.1; platform_system=="Windows"
 # Linux-specific optimizations
 python-prctl>=1.8.0; platform_system=="Linux"
 
-# macOS-specific optimizations
+# macOS-specific optimizations (M1/M2 Mac対応)
 pyobjc>=10.0; platform_system=="Darwin"
 pyobjc-framework-Metal>=10.0; platform_system=="Darwin"
 pyobjc-framework-MetalKit>=10.0; platform_system=="Darwin"
 pyobjc-framework-Accelerate>=10.0; platform_system=="Darwin"
+pyobjc-framework-MetalPerformanceShaders>=10.0; platform_system=="Darwin"
 
-# ================================================
-# Optional: Experimental Features
-# ================================================
-# Intel Extension for PyTorch (Intel GPU support)
-# intel-extension-for-pytorch>=2.1.0; platform_system=="Windows" or platform_system=="Linux"
-
-# AMD ROCm support (AMD GPU)
-# torch-audio-rocm>=2.1.0; platform_system=="Linux"
-
-# ================================================
-# Version Notes:
-# - PyTorch 2.1+ with CUDA 12.1 for RTX 40/50 series
-# - TensorFlow 2.14+ with Metal backend for Apple Silicon
-# - MLX framework for M2+ native acceleration  
-# - JAX with Apple Silicon optimization
-# - Platform-specific conditional installs
-# ================================================ 
+# Apple Silicon機械学習最適化
+mlx>=0.3.0; platform_system=="Darwin" and platform_machine=="arm64"
+tensorflow-metal>=1.0.0; platform_system=="Darwin"

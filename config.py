@@ -128,7 +128,7 @@ class SPSSGradeConfig:
         }
 
 class HardwareDetector:
-    """ハードウェア検出・最適化クラス"""
+    """ハードウェア検出・最適化クラス（M1/M2 Mac・ROCm・Intel GPU対応）"""
     
     def __init__(self):
         self.platform = platform.system()
@@ -144,6 +144,11 @@ class HardwareDetector:
         self.apple_silicon_info = self._detect_apple_silicon()
         self.amd_gpu_info = self._detect_amd_gpu()
         self.intel_gpu_info = self._detect_intel_gpu()
+        
+        # Advanced platform support
+        self.metal_support = self._detect_metal_support()
+        self.rocm_support = self._detect_rocm_support()
+        self.mlx_support = self._detect_mlx_support()
         
         # SPSS-grade configuration
         self.spss_config = SPSSGradeConfig()
@@ -197,6 +202,24 @@ class HardwareDetector:
         
         self.monitor_thread = threading.Thread(target=monitor, daemon=True)
         self.monitor_thread.start()
+    
+    def get_optimal_profile(self) -> PerformanceProfile:
+        """最適パフォーマンスプロファイル取得"""
+        memory_gb = self.memory_info.get('total_gb', 8)
+        cores = self.cpu_info.get('cores', 4) or 4
+        
+        # Ultra High性能システム
+        if memory_gb >= 64 and cores >= 16:
+            return self.spss_config.performance_profiles['ultra_high']
+        # High性能システム  
+        elif memory_gb >= 32 and cores >= 8:
+            return self.spss_config.performance_profiles['high']
+        # Standard性能システム
+        elif memory_gb >= 16 and cores >= 4:
+            return self.spss_config.performance_profiles['standard']
+        # Conservative設定
+        else:
+            return self.spss_config.performance_profiles['conservative']
     
     def get_optimal_profile(self) -> PerformanceProfile:
         """最適なパフォーマンスプロファイルを取得"""
@@ -492,6 +515,180 @@ class HardwareDetector:
         # Future implementation for Intel GPU support
         return intel_info
     
+    def _detect_cpu(self) -> Dict[str, Any]:
+        """CPU詳細検出"""
+        cpu_info = {
+            'cores': os.cpu_count(),
+            'architecture': self.architecture,
+            'spss_performance_rating': 'Basic'
+        }
+        
+        try:
+            import cpuinfo
+            cpu_data = cpuinfo.get_cpu_info()
+            cpu_info.update({
+                'brand': cpu_data.get('brand_raw', 'Unknown'),
+                'frequency': cpu_data.get('hz_actual_friendly', 'Unknown'),
+                'features': cpu_data.get('flags', [])
+            })
+            
+            # CPU性能評価
+            cores = cpu_info['cores'] or 1
+            if cores >= 16:
+                cpu_info['spss_performance_rating'] = 'Superior to SPSS'
+            elif cores >= 8:
+                cpu_info['spss_performance_rating'] = 'SPSS-Grade'
+            elif cores >= 4:
+                cpu_info['spss_performance_rating'] = 'SPSS-Compatible'
+                
+        except ImportError:
+            pass
+        
+        return cpu_info
+    
+    def _detect_memory(self) -> Dict[str, Any]:
+        """メモリ詳細検出"""
+        memory_info = {
+            'total_gb': 8,
+            'spss_performance_rating': 'Basic'
+        }
+        
+        try:
+            import psutil
+            memory = psutil.virtual_memory()
+            total_gb = memory.total / (1024**3)
+            memory_info.update({
+                'total_gb': total_gb,
+                'available_gb': memory.available / (1024**3),
+                'percent_used': memory.percent
+            })
+            
+            # メモリ性能評価
+            if total_gb >= 64:
+                memory_info['spss_performance_rating'] = 'Superior to SPSS'
+            elif total_gb >= 32:
+                memory_info['spss_performance_rating'] = 'SPSS-Grade'
+            elif total_gb >= 16:
+                memory_info['spss_performance_rating'] = 'SPSS-Compatible'
+                
+        except ImportError:
+            pass
+        
+        return memory_info
+    
+    def _detect_metal_support(self) -> Dict[str, Any]:
+        """Metal Performance Shadersサポート検出"""
+        metal_info = {
+            'available': False,
+            'version': None,
+            'devices': [],
+            'unified_memory': False
+        }
+        
+        if self.platform == 'Darwin':
+            try:
+                # Check for Metal support
+                import subprocess
+                result = subprocess.run(['system_profiler', 'SPDisplaysDataType'], 
+                                      capture_output=True, text=True)
+                if result.returncode == 0 and 'Metal' in result.stdout:
+                    metal_info['available'] = True
+                    
+                    # Apple Silicon特有の機能
+                    if self.architecture == 'arm64':
+                        metal_info['unified_memory'] = True
+                        metal_info['neural_engine'] = True
+                        
+                        # MLXフレームワーク対応確認
+                        try:
+                            import mlx.core as mx
+                            metal_info['mlx_available'] = True
+                        except ImportError:
+                            metal_info['mlx_available'] = False
+                            
+            except Exception as e:
+                print(f"Metal detection failed: {e}")
+        
+        return metal_info
+    
+    def _detect_rocm_support(self) -> Dict[str, Any]:
+        """ROCmサポート検出"""
+        rocm_info = {
+            'available': False,
+            'version': None,
+            'devices': [],
+            'pytorch_rocm': False
+        }
+        
+        if self.platform == 'Linux':
+            try:
+                # ROCmインストール確認
+                rocm_result = subprocess.run(['which', 'rocm-smi'], 
+                                           capture_output=True, text=True)
+                if rocm_result.returncode == 0:
+                    rocm_info['available'] = True
+                    
+                    # ROCmバージョン取得
+                    version_result = subprocess.run(['rocm-smi', '--version'], 
+                                                  capture_output=True, text=True)
+                    if version_result.returncode == 0:
+                        rocm_info['version'] = version_result.stdout.strip()
+                    
+                    # AMD GPU デバイス検出
+                    device_result = subprocess.run(['rocm-smi', '--showid'], 
+                                                 capture_output=True, text=True)
+                    if device_result.returncode == 0:
+                        # Parse device information
+                        lines = device_result.stdout.strip().split('\n')
+                        devices = []
+                        for line in lines:
+                            if 'GPU' in line:
+                                devices.append({'name': line.strip(), 'spss_rating': 'SPSS-Compatible'})
+                        rocm_info['devices'] = devices
+                    
+                    # PyTorch ROCm対応確認
+                    try:
+                        import torch
+                        if hasattr(torch, 'hip') and torch.hip.is_available():
+                            rocm_info['pytorch_rocm'] = True
+                    except ImportError:
+                        pass
+                        
+            except Exception as e:
+                print(f"ROCm detection failed: {e}")
+        
+        return rocm_info
+    
+    def _detect_mlx_support(self) -> Dict[str, Any]:
+        """MLXフレームワーク対応検出（Apple Silicon専用）"""
+        mlx_info = {
+            'available': False,
+            'version': None,
+            'neural_engine': False,
+            'unified_memory': False
+        }
+        
+        if self.platform == 'Darwin' and self.architecture == 'arm64':
+            try:
+                import mlx.core as mx
+                mlx_info['available'] = True
+                mlx_info['version'] = mx.__version__
+                mlx_info['neural_engine'] = True
+                mlx_info['unified_memory'] = True
+                
+                # MLX最適化設定
+                mlx_info['optimization'] = {
+                    'gpu_acceleration': True,
+                    'neural_engine': True,
+                    'mixed_precision': True,
+                    'memory_efficient': True
+                }
+                
+            except ImportError:
+                pass
+        
+        return mlx_info
+    
     def _has_tensor_cores(self, gpu_name: str) -> bool:
         """Tensor Cores対応確認"""
         tensor_core_gpus = ['RTX 20', 'RTX 30', 'RTX 40', 'RTX 50', 'A100', 'V100', 'T4']
@@ -552,6 +749,32 @@ class HardwareDetector:
                     'unified_memory': True,
                     'mlx_optimization': apple_device.get('mlx_compatible', False)
                 })
+        
+        # ROCm (AMD GPU) optimization
+        if self.rocm_support['available']:
+            settings.update({
+                'rocm_acceleration': True,
+                'amd_gpu': True,
+                'hip_support': self.rocm_support.get('pytorch_rocm', False),
+                'amd_optimization_level': 'high'
+            })
+        
+        # MLX framework optimization (Apple Silicon専用)
+        if self.mlx_support['available']:
+            settings.update({
+                'mlx_framework': True,
+                'apple_neural_engine': True,
+                'unified_memory_optimization': True,
+                'mixed_precision_mlx': True
+            })
+        
+        # Metal Performance Shaders optimization
+        if self.metal_support['available']:
+            settings.update({
+                'metal_performance_shaders': True,
+                'gpu_memory_unified': self.metal_support.get('unified_memory', False),
+                'metal_optimization': 'maximum'
+            })
         
         return settings
 
