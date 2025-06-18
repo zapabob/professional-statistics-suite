@@ -68,7 +68,7 @@ class SPSSGradeConfig:
             'standard': PerformanceProfile(
                 name='Standard Performance',
                 max_memory_usage=16.0,
-                cpu_threads=max(1, os.cpu_count() // 2),
+                cpu_threads=max(1, (os.cpu_count() or 4) // 2),
                 gpu_memory_fraction=0.6,
                 batch_size_multiplier=1.0,
                 optimization_level='medium',
@@ -79,7 +79,7 @@ class SPSSGradeConfig:
             'conservative': PerformanceProfile(
                 name='Conservative',
                 max_memory_usage=8.0,
-                cpu_threads=max(1, os.cpu_count() // 4),
+                cpu_threads=max(1, (os.cpu_count() or 4) // 4),
                 gpu_memory_fraction=0.4,
                 batch_size_multiplier=0.5,
                 optimization_level='low',
@@ -204,24 +204,6 @@ class HardwareDetector:
         self.monitor_thread.start()
     
     def get_optimal_profile(self) -> PerformanceProfile:
-        """最適パフォーマンスプロファイル取得"""
-        memory_gb = self.memory_info.get('total_gb', 8)
-        cores = self.cpu_info.get('cores', 4) or 4
-        
-        # Ultra High性能システム
-        if memory_gb >= 64 and cores >= 16:
-            return self.spss_config.performance_profiles['ultra_high']
-        # High性能システム  
-        elif memory_gb >= 32 and cores >= 8:
-            return self.spss_config.performance_profiles['high']
-        # Standard性能システム
-        elif memory_gb >= 16 and cores >= 4:
-            return self.spss_config.performance_profiles['standard']
-        # Conservative設定
-        else:
-            return self.spss_config.performance_profiles['conservative']
-    
-    def get_optimal_profile(self) -> PerformanceProfile:
         """最適なパフォーマンスプロファイルを取得"""
         total_memory_gb = self.memory_info.get('total_gb', 8)
         
@@ -284,7 +266,10 @@ class HardwareDetector:
             import torch
             if torch.cuda.is_available():
                 gpu_info['nvidia']['available'] = True
-                gpu_info['nvidia']['cuda_version'] = torch.version.cuda
+                try:
+                    gpu_info['nvidia']['cuda_version'] = torch.version.cuda  # type: ignore
+                except AttributeError:
+                    gpu_info['nvidia']['cuda_version'] = "Unknown"
                 gpu_info['primary_platform'] = 'cuda'
                 gpu_info['recommended_backend'] = 'cuda'
                 
@@ -524,25 +509,27 @@ class HardwareDetector:
         }
         
         try:
-            import cpuinfo
+            import cpuinfo  # type: ignore
             cpu_data = cpuinfo.get_cpu_info()
             cpu_info.update({
                 'brand': cpu_data.get('brand_raw', 'Unknown'),
                 'frequency': cpu_data.get('hz_actual_friendly', 'Unknown'),
                 'features': cpu_data.get('flags', [])
             })
-            
-            # CPU性能評価
-            cores = cpu_info['cores'] or 1
-            if cores >= 16:
-                cpu_info['spss_performance_rating'] = 'Superior to SPSS'
-            elif cores >= 8:
-                cpu_info['spss_performance_rating'] = 'SPSS-Grade'
-            elif cores >= 4:
-                cpu_info['spss_performance_rating'] = 'SPSS-Compatible'
-                
         except ImportError:
-            pass
+            # cpuinfo not available, use basic CPU info
+            cpu_info['brand'] = platform.processor() or 'Unknown'
+            cpu_info['frequency'] = 'Unknown'
+            cpu_info['features'] = []
+        
+        # CPU性能評価
+        cores = cpu_info['cores'] or 1
+        if cores >= 16:
+            cpu_info['spss_performance_rating'] = 'Superior to SPSS'
+        elif cores >= 8:
+            cpu_info['spss_performance_rating'] = 'SPSS-Grade'
+        elif cores >= 4:
+            cpu_info['spss_performance_rating'] = 'SPSS-Compatible'
         
         return cpu_info
     
@@ -601,7 +588,7 @@ class HardwareDetector:
                         
                         # MLXフレームワーク対応確認
                         try:
-                            import mlx.core as mx
+                            import mlx.core as mx  # type: ignore
                             metal_info['mlx_available'] = True
                         except ImportError:
                             metal_info['mlx_available'] = False
@@ -649,9 +636,9 @@ class HardwareDetector:
                     # PyTorch ROCm対応確認
                     try:
                         import torch
-                        if hasattr(torch, 'hip') and torch.hip.is_available():
+                        if hasattr(torch, 'hip') and torch.hip.is_available():  # type: ignore
                             rocm_info['pytorch_rocm'] = True
-                    except ImportError:
+                    except (ImportError, AttributeError):
                         pass
                         
             except Exception as e:
@@ -670,7 +657,7 @@ class HardwareDetector:
         
         if self.platform == 'Darwin' and self.architecture == 'arm64':
             try:
-                import mlx.core as mx
+                import mlx.core as mx  # type: ignore
                 mlx_info['available'] = True
                 mlx_info['version'] = mx.__version__
                 mlx_info['neural_engine'] = True
