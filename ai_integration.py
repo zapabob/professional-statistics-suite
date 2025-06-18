@@ -3,7 +3,6 @@
 """
 AI Integration Module
 AI統合モジュール - OpenAI, Google AI Studio, Anthropic, 画像処理, 自然言語処理
-Multi-Platform GPU Support: CUDA / MPS / ROCm
 最新版API対応 (2024年対応)
 """
 
@@ -21,56 +20,6 @@ import logging
 # Data processing
 import pandas as pd
 import numpy as np
-
-# Platform and GPU detection
-try:
-    from config import HardwareDetector
-    hardware_detector = HardwareDetector()
-    HARDWARE_DETECTION_AVAILABLE = True
-except ImportError:
-    hardware_detector = None
-    HARDWARE_DETECTION_AVAILABLE = False
-
-# GPU Platform Support
-def get_platform_capabilities() -> Dict[str, Any]:
-    """プラットフォーム機能を取得"""
-    capabilities = {
-        'platform': platform.system(),
-        'architecture': platform.machine(),
-        'gpu_acceleration': False,
-        'gpu_platform': 'cpu',
-        'optimization_level': 'standard'
-    }
-    
-    if HARDWARE_DETECTION_AVAILABLE and hardware_detector:
-        gpu_info = hardware_detector.gpu_info
-        
-        if gpu_info['nvidia']['available']:
-            capabilities.update({
-                'gpu_acceleration': True,
-                'gpu_platform': 'cuda',
-                'optimization_level': 'high',
-                'gpu_devices': gpu_info['nvidia']['devices']
-            })
-        elif gpu_info['apple']['available']:
-            capabilities.update({
-                'gpu_acceleration': True,
-                'gpu_platform': 'mps',
-                'optimization_level': 'apple_silicon',
-                'gpu_devices': gpu_info['apple']['devices']
-            })
-        elif gpu_info['amd']['available']:
-            capabilities.update({
-                'gpu_acceleration': True,
-                'gpu_platform': 'rocm',
-                'optimization_level': 'amd_gpu',
-                'gpu_devices': gpu_info['amd']['devices']
-            })
-    
-    return capabilities
-
-# Platform capabilities
-PLATFORM_CAPABILITIES = get_platform_capabilities()
 
 # AI API clients (オプション)
 try:
@@ -170,16 +119,11 @@ STATISTICAL_ANALYSIS_PROMPTS = {
 }
 
 class AIStatisticalAnalyzer:
-    """AI統計解析エンジン - マルチプラットフォーム対応版"""
+    """AI統計解析エンジン - 最新API対応版"""
     
     def __init__(self):
         self.analysis_history: List[Dict[str, Any]] = []
         self.logger = logging.getLogger(__name__)
-        self.platform_capabilities = PLATFORM_CAPABILITIES
-        
-        # プラットフォーム最適化ログ
-        self.logger.info(f"AI統計解析エンジン初期化 - プラットフォーム: {self.platform_capabilities['platform']}")
-        self.logger.info(f"GPU最適化: {self.platform_capabilities['gpu_acceleration']} ({self.platform_capabilities['gpu_platform']})")
     
     async def analyze_natural_language_query(self, query: str, data: pd.DataFrame) -> Dict[str, Any]:
         """自然言語クエリで統計解析（マルチプラットフォーム対応）"""

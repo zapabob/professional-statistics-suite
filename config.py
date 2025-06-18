@@ -36,13 +36,12 @@ class PerformanceProfile:
     parallel_processing: bool
     cache_enabled: bool
     description: str
-    gpu_platform: str = "auto"  # "cuda", "mps", "rocm", "cpu"
 
 class SPSSGradeConfig:
-    """SPSS級設定管理クラス - Multi-Platform Support"""
+    """SPSS級設定管理クラス"""
     
     def __init__(self):
-        # パフォーマンスプロファイル定義（マルチプラットフォーム対応）
+        # パフォーマンスプロファイル定義
         self.performance_profiles = {
             'ultra_high': PerformanceProfile(
                 name='Ultra High Performance',
@@ -53,8 +52,7 @@ class SPSSGradeConfig:
                 optimization_level='maximum',
                 parallel_processing=True,
                 cache_enabled=True,
-                gpu_platform='auto',
-                description='Maximum performance for large-scale analysis (64GB+ RAM) - Supports CUDA/MPS/ROCm'
+                description='Maximum performance for large-scale analysis (64GB+ RAM)'
             ),
             'high': PerformanceProfile(
                 name='High Performance',
@@ -65,8 +63,7 @@ class SPSSGradeConfig:
                 optimization_level='high',
                 parallel_processing=True,
                 cache_enabled=True,
-                gpu_platform='auto',
-                description='High performance for medium to large datasets (32GB+ RAM) - Multi-GPU Support'
+                description='High performance for medium to large datasets (32GB+ RAM)'
             ),
             'standard': PerformanceProfile(
                 name='Standard Performance',
@@ -77,8 +74,7 @@ class SPSSGradeConfig:
                 optimization_level='medium',
                 parallel_processing=True,
                 cache_enabled=True,
-                gpu_platform='auto',
-                description='Balanced performance for standard workloads (16GB+ RAM) - Apple Silicon Optimized'
+                description='Balanced performance for standard workloads (16GB+ RAM)'
             ),
             'conservative': PerformanceProfile(
                 name='Conservative',
@@ -89,12 +85,11 @@ class SPSSGradeConfig:
                 optimization_level='low',
                 parallel_processing=False,
                 cache_enabled=False,
-                gpu_platform='cpu',
-                description='Conservative settings for limited resources (8GB+ RAM) - CPU Only'
+                description='Conservative settings for limited resources (8GB+ RAM)'
             )
         }
         
-        # データ処理設定（マルチプラットフォーム）
+        # データ処理設定
         self.data_processing_config = {
             'chunk_size': 100000,  # pandas chunk size
             'use_polars': True,    # Use Polars for large datasets
@@ -102,13 +97,7 @@ class SPSSGradeConfig:
             'streaming_threshold': 1e6,  # Switch to streaming for >1M rows
             'compression': 'snappy',     # Default compression
             'parquet_engine': 'pyarrow', # Parquet engine
-            'cache_directory': Path.home() / '.professional_stats_suite' / 'cache',
-            'gpu_acceleration': {
-                'cuda': True,   # NVIDIA CUDA
-                'mps': True,    # Apple Metal Performance Shaders
-                'rocm': True,   # AMD ROCm
-                'auto_detect': True
-            }
+            'cache_directory': Path.home() / '.professional_stats_suite' / 'cache'
         }
         
         # 統計解析設定（GPU プラットフォーム対応）
@@ -402,7 +391,7 @@ class HardwareDetector:
             return 'Excellent'
         elif any(mid_high in gpu_name_lower for mid_high in ['rx 7800', 'rx 6800', 'rx 6700']):
             return 'Very Good'
-        elif any(mid in gpu_name_lower for mid_high in ['rx 7600', 'rx 6600', 'rx 5700']):
+        elif any(mid in gpu_name_lower for mid in ['rx 7600', 'rx 6600', 'rx 5700']):
             return 'Good'
         else:
             return 'Basic'

@@ -3,7 +3,6 @@
 """
 Machine Learning Pipeline Automation Module
 機械学習パイプライン自動化モジュール
-Multi-Platform Support: CUDA / MPS / ROCm
 
 Author: Ryo Minegishi
 License: MIT
@@ -23,125 +22,6 @@ import multiprocessing as mp
 import joblib
 import pickle
 import json
-import platform
-import os
-
-# GPU Platform Detection and Optimization
-class GPUPlatformManager:
-    """GPU プラットフォーム管理クラス（CUDA/MPS/ROCm対応）"""
-    
-    def __init__(self):
-        self.platform = platform.system()
-        self.available_platforms = self._detect_gpu_platforms()
-        self.optimal_platform = self._select_optimal_platform()
-        self.device_config = self._configure_device()
-    
-    def _detect_gpu_platforms(self) -> Dict[str, bool]:
-        """利用可能なGPUプラットフォームを検出"""
-        platforms = {
-            'cuda': False,
-            'mps': False,
-            'rocm': False,
-            'opencl': False
-        }
-        
-        try:
-            import torch
-            
-            # NVIDIA CUDA Detection
-            if torch.cuda.is_available():
-                # Check if it's actually CUDA or ROCm
-                device_name = torch.cuda.get_device_name(0).lower()
-                if any(amd_id in device_name for amd_id in ['radeon', 'vega', 'navi', 'rdna']):
-                    platforms['rocm'] = True
-                else:
-                    platforms['cuda'] = True
-            
-            # Apple MPS Detection
-            if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
-                platforms['mps'] = True
-                
-        except ImportError:
-            print("PyTorch not available - using CPU only")
-        
-        # OpenCL Detection (fallback for AMD)
-        try:
-            import pyopencl as cl
-            context = cl.create_some_context(interactive=False)
-            if context:
-                platforms['opencl'] = True
-        except:
-            pass
-        
-        return platforms
-    
-    def _select_optimal_platform(self) -> str:
-        """最適なGPUプラットフォームを選択"""
-        if self.available_platforms['cuda']:
-            return 'cuda'
-        elif self.available_platforms['mps']:
-            return 'mps'
-        elif self.available_platforms['rocm']:
-            return 'rocm'
-        elif self.available_platforms['opencl']:
-            return 'opencl'
-        else:
-            return 'cpu'
-    
-    def _configure_device(self) -> Dict[str, Any]:
-        """デバイス設定を構成"""
-        config = {
-            'platform': self.optimal_platform,
-            'device': 'cpu',
-            'memory_fraction': 0.8,
-            'mixed_precision': False
-        }
-        
-        if self.optimal_platform == 'cuda':
-            config.update({
-                'device': 'cuda',
-                'mixed_precision': True,
-                'optimization_level': 'O2'
-            })
-        elif self.optimal_platform == 'mps':
-            config.update({
-                'device': 'mps',
-                'mixed_precision': True,  # MPS supports mixed precision
-                'optimization_level': 'metal_optimized'
-            })
-        elif self.optimal_platform == 'rocm':
-            config.update({
-                'device': 'cuda',  # ROCm uses CUDA-like interface
-                'mixed_precision': True,
-                'optimization_level': 'rocm_optimized'
-            })
-        
-        return config
-    
-    def get_device_info(self) -> Dict[str, Any]:
-        """デバイス情報を取得"""
-        info = {
-            'platform': self.optimal_platform,
-            'available_platforms': self.available_platforms,
-            'device_config': self.device_config
-        }
-        
-        try:
-            import torch
-            if self.optimal_platform in ['cuda', 'rocm']:
-                info['gpu_count'] = torch.cuda.device_count()
-                info['gpu_name'] = torch.cuda.get_device_name(0)
-                info['gpu_memory_gb'] = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-            elif self.optimal_platform == 'mps':
-                info['mps_available'] = torch.backends.mps.is_available()
-                info['mps_built'] = torch.backends.mps.is_built()
-        except ImportError:
-            pass
-        
-        return info
-
-# Initialize GPU Platform Manager
-gpu_manager = GPUPlatformManager()
 
 # 機械学習ライブラリ
 try:
@@ -180,74 +60,24 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE = False
 
-# 高度機械学習ライブラリ（GPU対応）
+# 高度機械学習ライブラリ
 try:
     import xgboost as xgb
     XGBOOST_AVAILABLE = True
-    
-    # XGBoost GPU configuration
-    xgb_gpu_params = {}
-    if gpu_manager.optimal_platform == 'cuda':
-        xgb_gpu_params = {'tree_method': 'gpu_hist', 'gpu_id': 0}
-    elif gpu_manager.optimal_platform == 'rocm':
-        # ROCm support for XGBoost (experimental)
-        xgb_gpu_params = {'tree_method': 'gpu_hist', 'gpu_id': 0}
-    
 except ImportError:
     XGBOOST_AVAILABLE = False
-    xgb_gpu_params = {}
 
 try:
     import lightgbm as lgb
     LIGHTGBM_AVAILABLE = True
-    
-    # LightGBM GPU configuration
-    lgb_gpu_params = {}
-    if gpu_manager.optimal_platform == 'cuda':
-        lgb_gpu_params = {'device': 'gpu', 'gpu_platform_id': 0, 'gpu_device_id': 0}
-    elif gpu_manager.optimal_platform == 'opencl':
-        lgb_gpu_params = {'device': 'gpu', 'gpu_platform_id': 0, 'gpu_device_id': 0}
-    
 except ImportError:
     LIGHTGBM_AVAILABLE = False
-    lgb_gpu_params = {}
 
 try:
     import catboost as cb
     CATBOOST_AVAILABLE = True
-    
-    # CatBoost GPU configuration
-    cb_gpu_params = {}
-    if gpu_manager.optimal_platform == 'cuda':
-        cb_gpu_params = {'task_type': 'GPU', 'devices': '0'}
-    
 except ImportError:
     CATBOOST_AVAILABLE = False
-    cb_gpu_params = {}
-
-# PyTorch GPU Support
-try:
-    import torch
-    import torch.nn as nn
-    import torch.optim as optim
-    TORCH_AVAILABLE = True
-    
-    # Configure PyTorch device
-    if gpu_manager.optimal_platform == 'cuda':
-        torch_device = torch.device('cuda')
-        torch.backends.cudnn.benchmark = True
-    elif gpu_manager.optimal_platform == 'mps':
-        torch_device = torch.device('mps')
-        # Apple Silicon optimizations
-        os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
-    elif gpu_manager.optimal_platform == 'rocm':
-        torch_device = torch.device('cuda')  # ROCm uses CUDA interface
-    else:
-        torch_device = torch.device('cpu')
-        
-except ImportError:
-    TORCH_AVAILABLE = False
-    torch_device = None
 
 # AutoMLライブラリ
 try:
@@ -266,66 +96,23 @@ except ImportError:
 warnings.filterwarnings('ignore')
 
 class MLPipelineAutomator:
-    """機械学習パイプライン自動化クラス（マルチプラットフォーム対応）"""
+    """機械学習パイプライン自動化クラス"""
     
-    def __init__(self, random_state: int = 42, n_jobs: int = -1, gpu_acceleration: bool = True):
+    def __init__(self, random_state: int = 42, n_jobs: int = -1):
         self.random_state = random_state
         self.n_jobs = n_jobs if n_jobs != -1 else mp.cpu_count()
-        self.gpu_acceleration = gpu_acceleration and gpu_manager.optimal_platform != 'cpu'
-        self.gpu_manager = gpu_manager
-        
         self.trained_models = {}
         self.preprocessing_pipelines = {}
         self.results_history = []
         self.best_models = {}
         
-        # Platform-specific optimizations
-        self.platform_config = self._configure_platform_optimizations()
-        
         if not SKLEARN_AVAILABLE:
             raise ImportError("scikit-learn is required for ML automation")
         
         if PROFESSIONAL_LOGGING:
-            professional_logger.info(
-                "機械学習パイプライン自動化システム初期化（マルチプラットフォーム対応）",
-                random_state=random_state, 
-                n_jobs=self.n_jobs,
-                gpu_platform=gpu_manager.optimal_platform,
-                gpu_acceleration=self.gpu_acceleration,
-                device_info=gpu_manager.get_device_info()
-            )
-    
-    def _configure_platform_optimizations(self) -> Dict[str, Any]:
-        """プラットフォーム特化最適化設定"""
-        config = {
-            'platform': gpu_manager.optimal_platform,
-            'batch_size_multiplier': 1.0,
-            'memory_optimization': True,
-            'mixed_precision': False
-        }
-        
-        if gpu_manager.optimal_platform == 'cuda':
-            config.update({
-                'batch_size_multiplier': 2.0,
-                'mixed_precision': True,
-                'tensor_cores': True,
-                'cuda_optimization': True
-            })
-        elif gpu_manager.optimal_platform == 'mps':
-            config.update({
-                'batch_size_multiplier': 1.5,
-                'mixed_precision': True,
-                'metal_optimization': True,
-                'unified_memory': True
-            })
-        elif gpu_manager.optimal_platform == 'rocm':
-            config.update({
-                'batch_size_multiplier': 1.8,
-                'mixed_precision': True,
-                'rocm_optimization': True
-            })
-        
-        return config
+            professional_logger.info("機械学習パイプライン自動化システム初期化",
+                                   random_state=random_state, n_jobs=self.n_jobs)
+
     
     @performance_monitor.monitor_function("automated_preprocessing") if PROFESSIONAL_LOGGING else lambda x: x
     def automated_preprocessing(self, data: pd.DataFrame, target_col: str, 
