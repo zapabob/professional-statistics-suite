@@ -100,7 +100,7 @@ class SPSSGradeConfig:
             'cache_directory': Path.home() / '.professional_stats_suite' / 'cache'
         }
         
-        # 統計解析設定（GPU プラットフォーム対応）
+        # 統計解析設定
         self.statistical_config = {
             'significance_level': 0.05,
             'confidence_interval': 0.95,
@@ -111,13 +111,10 @@ class SPSSGradeConfig:
             'random_state': 42,
             'use_gpu_stats': True,  # GPU acceleration for statistics
             'parallel_bootstrap': True,
-            'robust_methods': True,  # Use robust statistical methods by default
-            'gpu_fallback': True,   # CPU fallback if GPU unavailable
-            'metal_optimization': True,  # Apple Metal optimization
-            'rocm_optimization': True    # AMD ROCm optimization
+            'robust_methods': True  # Use robust statistical methods by default
         }
         
-        # 可視化設定（プラットフォーム特化）
+        # 可視化設定
         self.visualization_config = {
             'dpi': 300,
             'figure_size': (12, 8),
@@ -127,16 +124,11 @@ class SPSSGradeConfig:
             'save_format': 'png',
             'webgl': True,  # Use WebGL for faster rendering
             'max_points': 100000,  # Maximum points for scatter plots
-            'use_datashader': True,  # Use Datashader for big data visualization
-            'platform_optimization': {
-                'apple_silicon': True,   # Optimize for M1/M2
-                'amd_gpu': True,         # Optimize for AMD GPUs
-                'nvidia_gpu': True       # Optimize for NVIDIA GPUs
-            }
+            'use_datashader': True  # Use Datashader for big data visualization
         }
 
 class HardwareDetector:
-    """ハードウェア検出・最適化クラス（M1/M2/ROCm対応）"""
+    """ハードウェア検出・最適化クラス"""
     
     def __init__(self):
         self.platform = platform.system()

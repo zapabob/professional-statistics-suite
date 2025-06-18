@@ -90,18 +90,15 @@ except ImportError:
     
     ai_config = MockConfig()
 
-# プロンプトテンプレート（マルチプラットフォーム対応）
+# プロンプトテンプレート
 STATISTICAL_ANALYSIS_PROMPTS = {
-    "natural_language_query": "分析要求: {user_query}\nプラットフォーム情報: {platform_info}",
-    "image_data_extraction": "画像からデータを抽出してください。GPU最適化: {gpu_optimization}",
+    "natural_language_query": "分析要求: {user_query}",
+    "image_data_extraction": "画像からデータを抽出してください。",
     "code_generation": """
 データサイエンスの専門家として、以下の要求に基づいて実行可能なPythonコードを生成してください。
 
 データ情報:
 {data_info}
-
-システム情報:
-{platform_info}
 
 ユーザー要求: {user_query}
 
@@ -110,7 +107,6 @@ STATISTICAL_ANALYSIS_PROMPTS = {
 2. 必要に応じてmatplotlib/seabornでビジュアライゼーション
 3. エラーハンドリングを含める
 4. 日本語コメントを追加
-5. 利用可能なGPU最適化を活用（{gpu_platform}）
 
 ```python
 # 生成されたコード

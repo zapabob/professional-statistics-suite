@@ -3,7 +3,7 @@
 # SPSS-Grade Performance Enhancement
 
 # ================================================
-# Core Data Science Libraries - 608- Grade
+# Core Data Science Libraries - SPSS Grade
 # ================================================
 numpy>=1.24.0
 pandas>=2.0.0
