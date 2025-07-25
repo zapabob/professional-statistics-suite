@@ -83,8 +83,8 @@ class PerformanceProfiler:
         
         # GC統計を取得
         gc_stats_after = gc.get_stats()
-        gc_collections = sum(stats['collections'] for stats in gc_stats_after) - sum(stats['collections'] for stats in gc_stats_before)
-        gc_time = sum(stats['collections_time'] for stats in gc_stats_after) - sum(stats['collections_time'] for stats in gc_stats_before)
+        gc_collections = sum(stats.get('collections', 0) for stats in gc_stats_after) - sum(stats.get('collections', 0) for stats in gc_stats_before)
+        gc_time = sum(stats.get('collections_time', 0) for stats in gc_stats_after) - sum(stats.get('collections_time', 0) for stats in gc_stats_before)
         
         # メトリクス作成
         metrics = TestPerformanceMetrics(
@@ -180,11 +180,17 @@ class TestOptimizer:
         
         optimal_workers = min(cpu_count, test_count)
         
+        if test_count > 0 and optimal_workers > 0:
+            improvement_percentage = ((test_count / optimal_workers) / test_count) * 100
+            estimated_improvement = f"{improvement_percentage:.1f}% の実行時間短縮が期待できます"
+        else:
+            estimated_improvement = "テスト数が不足のため最適化できません"
+        
         return {
             "optimal_workers": optimal_workers,
             "cpu_count": cpu_count,
             "test_count": test_count,
-            "estimated_improvement": f"{(test_count / optimal_workers) / test_count * 100:.1f}% の実行時間短縮が期待できます"
+            "estimated_improvement": estimated_improvement
         }
     
     def generate_optimization_report(self) -> Dict:
@@ -328,24 +334,29 @@ def main():
     print("📊 パフォーマンス最適化レポート")
     print("="*50)
     
-    summary = optimization_report["performance_metrics"]["summary"]
-    print(f"✅ 総テスト数: {summary['total_tests']}")
-    print(f"⏱️ 総実行時間: {summary['total_execution_time']:.2f}秒")
-    print(f"📊 平均実行時間: {summary['average_execution_time']:.2f}秒")
-    print(f"💾 平均メモリ使用量: {summary['average_memory_usage_mb']:.1f}MB")
+    performance_metrics = optimization_report["performance_metrics"]
+    if "summary" in performance_metrics:
+        summary = performance_metrics["summary"]
+        print(f"✅ 総テスト数: {summary.get('total_tests', 0)}")
+        print(f"⏱️ 総実行時間: {summary.get('total_execution_time', 0):.2f}秒")
+        print(f"📊 平均実行時間: {summary.get('average_execution_time', 0):.2f}秒")
+        print(f"💾 平均メモリ使用量: {summary.get('average_memory_usage_mb', 0):.1f}MB")
+    else:
+        print("⚠️ パフォーマンスメトリクスが利用できません")
     
     # 遅いテストの表示
-    slow_tests = optimization_report["performance_metrics"]["slow_tests"]
+    slow_tests = performance_metrics.get("slow_tests", [])
     if slow_tests:
         print(f"\n🐌 遅いテスト ({len(slow_tests)}件):")
         for test in slow_tests:
             print(f"  - {test['test_name']}: {test['execution_time']:.2f}秒")
     
     # 推奨事項の表示
-    recommendations = optimization_report["recommendations"]
-    if recommendations["parallel_execution"]["optimal_workers"] > 1:
-        print(f"\n⚡ 並列実行推奨: {recommendations['parallel_execution']['optimal_workers']}ワーカー")
-        print(f"   期待される改善: {recommendations['parallel_execution']['estimated_improvement']}")
+    recommendations = optimization_report.get("recommendations", {})
+    parallel_execution = recommendations.get("parallel_execution", {})
+    if parallel_execution.get("optimal_workers", 0) > 1:
+        print(f"\n⚡ 並列実行推奨: {parallel_execution['optimal_workers']}ワーカー")
+        print(f"   期待される改善: {parallel_execution['estimated_improvement']}")
 
 if __name__ == "__main__":
     main() 

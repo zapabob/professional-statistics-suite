@@ -29,9 +29,24 @@ import numpy as np
 
 # プロジェクト固有のインポート
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.gui.professional_statistics_gui import ProfessionalStatisticsGUI
-from src.gui.unified_ai_landing_gui import UnifiedAILandingGUI
-from src.gui.kiro_integrated_gui import KiroIntegratedGUI
+try:
+    from src.gui.professional_statistics_gui import ProfessionalStatisticsGUI
+except ImportError:
+    ProfessionalStatisticsGUI = None
+    print("⚠️ ProfessionalStatisticsGUIモジュールが見つかりません")
+
+try:
+    from src.gui.unified_ai_landing_gui import UnifiedAILandingGUI
+except ImportError:
+    UnifiedAILandingGUI = None
+    print("⚠️ UnifiedAILandingGUIモジュールが見つかりません")
+
+try:
+    from src.gui.kiro_integrated_gui import KiroIntegratedGUI
+except ImportError:
+    KiroIntegratedGUI = None
+    print("⚠️ KiroIntegratedGUIモジュールが見つかりません")
+
 # from gui.HAD_Statistics_GUI import HADStatisticsGUI  # モジュール不足のため一時的に無効化
 
 class ButtonTestResult:
@@ -119,6 +134,10 @@ class GUIButtonTestAutomation:
         """Professional Statistics GUI ボタンテスト"""
         self.logger.info("🧪 Professional Statistics GUI ボタンテスト開始")
         
+        if ProfessionalStatisticsGUI is None:
+            self.logger.warning("⚠️ ProfessionalStatisticsGUIモジュールが利用できません")
+            return {"error": "ProfessionalStatisticsGUIモジュールが見つかりません"}
+        
         try:
             # GUIインスタンス作成
             root = tk.Tk()
@@ -174,6 +193,10 @@ class GUIButtonTestAutomation:
         """Unified AI Landing GUI ボタンテスト"""
         self.logger.info("🧪 Unified AI Landing GUI ボタンテスト開始")
         
+        if UnifiedAILandingGUI is None:
+            self.logger.warning("⚠️ UnifiedAILandingGUIモジュールが利用できません")
+            return {"error": "UnifiedAILandingGUIモジュールが見つかりません"}
+        
         try:
             # GUIインスタンス作成
             root = tk.Tk()
@@ -228,6 +251,10 @@ class GUIButtonTestAutomation:
     def test_kiro_integrated_gui_buttons(self) -> Dict:
         """Kiro Integrated GUI ボタンテスト"""
         self.logger.info("🧪 Kiro Integrated GUI ボタンテスト開始")
+        
+        if KiroIntegratedGUI is None:
+            self.logger.warning("⚠️ KiroIntegratedGUIモジュールが利用できません")
+            return {"error": "KiroIntegratedGUIモジュールが見つかりません"}
         
         try:
             # GUIインスタンス作成

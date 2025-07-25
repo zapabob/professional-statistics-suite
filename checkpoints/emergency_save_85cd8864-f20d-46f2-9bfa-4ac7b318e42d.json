@@ -1,0 +1,11 @@
+{
+  "session_id": "85cd8864-f20d-46f2-9bfa-4ac7b318e42d",
+  "timestamp": "2025-07-25T20:45:42.172461",
+  "emergency_save": true,
+  "providers_status": {
+    "google": false,
+    "ollama": false,
+    "lmstudio": false,
+    "koboldcpp": false
+  }
+}
