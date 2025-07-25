@@ -33,10 +33,10 @@ except ImportError:
         LMSTUDIO_AVAILABLE = True
     except ImportError:
         LMSTUDIO_AVAILABLE = False
-        print("⚠️ LMStudioライブラリが利用できません")
+        print("⚠️ LMStudioライブラリが利用できません".encode('utf-8').decode(sys.stdout.encoding, 'ignore'))
 
 # 既存のAI統合システム
-from ai_integration import AIOrchestrator, AnalysisContext, IntentType
+from src.ai.ai_integration import AIOrchestrator, AnalysisContext, IntentType
 
 # ログ設定
 logging.basicConfig(level=logging.INFO)

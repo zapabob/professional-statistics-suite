@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-07-25T20:42:38.855975",
+  "source_path": "src",
+  "test_path": "src\\tests",
+  "coverage_data": {
+    "total_files": 0,
+    "covered_files": 0,
+    "total_lines": 0,
+    "covered_lines": 0,
+    "coverage_percentage": 0.0,
+    "modules": {},
+    "files": {}
+  },
+  "recommendations": [
+    "⚠️ 全体的なカバレッジが50%未満です。基本的なテストケースの追加が必要です"
+  ]
+}

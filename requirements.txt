@@ -20,9 +20,12 @@ python-docx>=0.8.11
 PyPDF2>=2.0.0
 
 # AI and ML
+ollama>=0.1.8
 openai>=0.27.0
 anthropic>=0.3.0
 langchain>=0.0.200
+google-generativeai
+lmstudio
 transformers>=4.20.0
 torch>=1.12.0
 sentence-transformers>=2.2.0

@@ -102,12 +102,5 @@ if prompt := st.chat_input("分析したい内容をどうぞ (例: A列とB列�
                     # セッションステートに保存するためにfigureをシリアライズできないので、
                     # ここでは単純に表示するだけにする。
                     # 必要であればBytesIOに保存するなどの工夫が必要。
-                plt.close('all') # 次のプロンプトのためにクリア
-
-                st.session_state.messages.append(message)
-
-            else:
-                error_message = f"エラーが発生しました: {result.get('error', '不明なエラー')}"
-                st.error(error_message)
-                st.session_state.messages.append({"role": "assistant", "content": error_message})
-''
+                
+'''

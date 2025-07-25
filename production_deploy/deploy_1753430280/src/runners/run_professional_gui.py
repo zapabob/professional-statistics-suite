@@ -158,6 +158,12 @@ def main():
         script_dir = os.path.dirname(os.path.abspath(__file__))
         os.chdir(script_dir)
         
+        # パスを追加
+        import sys
+        sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'ai'))
+        sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'statistics'))
+        sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'gui'))
+        
         # 高度なモジュールの事前インポートチェック
         try:
             import ai_integration

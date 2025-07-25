@@ -1,0 +1,39 @@
+{
+  "user_id": "gui_user",
+  "session_id": "44c23e3a-ea48-4f87-a8ef-da23f264218c",
+  "data_fingerprint": -5541772843700666068,
+  "analysis_history": [
+    {
+      "timestamp": "2025-07-25T17:40:25.576009",
+      "analysis_type": "exploratory",
+      "method_used": "ai_response",
+      "success": true,
+      "query": "",
+      "provider": "unknown",
+      "processing_time": 0.0,
+      "tokens_consumed": 0
+    }
+  ],
+  "user_expertise_level": "intermediate",
+  "privacy_settings": {
+    "use_local_llm": false,
+    "anonymize_data": true
+  },
+  "timestamp": "2025-07-25T17:40:19.441708",
+  "user_preferences": {
+    "preferred_visualization": "plotly",
+    "explanation_style": "detailed",
+    "language": "ja",
+    "auto_save": true
+  },
+  "session_metadata": {
+    "platform": "Windows",
+    "start_time": "2025-07-25T17:40:19.441708",
+    "data_sources": [],
+    "analysis_goals": []
+  },
+  "context_tags": [],
+  "learning_progress": {},
+  "favorite_methods": [],
+  "recent_queries": []
+}

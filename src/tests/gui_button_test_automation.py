@@ -29,9 +29,9 @@ import numpy as np
 
 # プロジェクト固有のインポート
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from gui.professional_statistics_gui import ProfessionalStatisticsGUI
-from gui.unified_ai_landing_gui import UnifiedAILandingGUI
-from gui.kiro_integrated_gui import KiroIntegratedGUI
+from src.gui.professional_statistics_gui import ProfessionalStatisticsGUI
+from src.gui.unified_ai_landing_gui import UnifiedAILandingGUI
+from src.gui.kiro_integrated_gui import KiroIntegratedGUI
 # from gui.HAD_Statistics_GUI import HADStatisticsGUI  # モジュール不足のため一時的に無効化
 
 class ButtonTestResult:

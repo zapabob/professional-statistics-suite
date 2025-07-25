@@ -4,7 +4,7 @@
 BOOTH商品ページコンテンツ自動生成
 """
 
-from booth_sales_manager import BoothSalesManager
+from .booth_sales_manager import BoothSalesManager
 
 def main():
     print("🎯 BOOTH商品ページコンテンツ生成中...")

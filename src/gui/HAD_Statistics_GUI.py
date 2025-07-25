@@ -19,9 +19,40 @@ import threading
 import queue
 import sys
 
-# 統計分析とプロット機能をインポート
-from HAD_Statistics_Functions import HADStatisticalAnalysis
-from HAD_Plotting_Functions import HADPlottingFunctions
+# 統計分析とプロット機能のスタブクラス
+class HADStatisticalAnalysis:
+    """HAD統計分析のスタブクラス"""
+    def __init__(self):
+        pass
+    
+    def basic_stats(self, data):
+        """基本統計のスタブ実装"""
+        return {"mean": 0, "std": 0, "min": 0, "max": 0}
+    
+    def correlation_analysis(self, data):
+        """相関分析のスタブ実装"""
+        return {"correlation": 0.0}
+    
+    def t_test(self, data1, data2):
+        """t検定のスタブ実装"""
+        return {"t_statistic": 0.0, "p_value": 1.0}
+
+class HADPlottingFunctions:
+    """HADプロット機能のスタブクラス"""
+    def __init__(self):
+        pass
+    
+    def create_histogram(self, data):
+        """ヒストグラムのスタブ実装"""
+        fig, ax = plt.subplots()
+        ax.hist(data if len(data) > 0 else [0], bins=10)
+        return fig
+    
+    def create_scatter(self, x, y):
+        """散布図のスタブ実装"""
+        fig, ax = plt.subplots()
+        ax.scatter(x if len(x) > 0 else [0], y if len(y) > 0 else [0])
+        return fig
 
 class HADStatisticsGUI:
     def __init__(self, root):

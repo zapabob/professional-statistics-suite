@@ -7,7 +7,7 @@ Statistical Method Advisor Demo
 
 import numpy as np
 import pandas as pd
-from ai_integration import StatisticalMethodAdvisor
+from src.ai.ai_integration import StatisticalMethodAdvisor
 
 def create_demo_datasets():
     """デモ用データセットを作成"""

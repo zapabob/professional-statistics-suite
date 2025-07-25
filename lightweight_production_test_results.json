@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-07-25T20:43:08.746433",
+  "overall_success": true,
+  "success_rate": 100.0,
+  "successful_tests": 6,
+  "total_tests": 6,
+  "execution_time": 32.718711853027344,
+  "test_results": [
+    {
+      "name": "基本インポート",
+      "result": {
+        "success": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "コアモジュール",
+      "result": {
+        "success": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "データ処理",
+      "result": {
+        "success": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "ファイル操作",
+      "result": {
+        "success": true,
+        "errors": []
+      }
+    },
+    {
+      "name": "システムリソース",
+      "result": {
+        "success": true,
+        "errors": [],
+        "warnings": [
+          "High memory usage: 19167.8MB"
+        ]
+      }
+    },
+    {
+      "name": "GUIコンポーネント",
+      "result": {
+        "success": true,
+        "errors": []
+      }
+    }
+  ]
+}

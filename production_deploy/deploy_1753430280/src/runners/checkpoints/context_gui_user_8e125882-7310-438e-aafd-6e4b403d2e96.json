@@ -1,0 +1,39 @@
+{
+  "user_id": "gui_user",
+  "session_id": "8e125882-7310-438e-aafd-6e4b403d2e96",
+  "data_fingerprint": 1825224569002798275,
+  "analysis_history": [
+    {
+      "timestamp": "2025-07-25T17:08:02.438750",
+      "analysis_type": "exploratory",
+      "method_used": "ai_response",
+      "success": true,
+      "query": "",
+      "provider": "unknown",
+      "processing_time": 0.0,
+      "tokens_consumed": 0
+    }
+  ],
+  "user_expertise_level": "intermediate",
+  "privacy_settings": {
+    "use_local_llm": true,
+    "preferred_provider": "lmstudio"
+  },
+  "timestamp": "2025-07-25T17:07:56.184316",
+  "user_preferences": {
+    "preferred_visualization": "plotly",
+    "explanation_style": "detailed",
+    "language": "ja",
+    "auto_save": true
+  },
+  "session_metadata": {
+    "platform": "Windows",
+    "start_time": "2025-07-25T17:07:56.184316",
+    "data_sources": [],
+    "analysis_goals": []
+  },
+  "context_tags": [],
+  "learning_progress": {},
+  "favorite_methods": [],
+  "recent_queries": []
+}

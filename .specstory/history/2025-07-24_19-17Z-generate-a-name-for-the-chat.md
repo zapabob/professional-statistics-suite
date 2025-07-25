@@ -15,7 +15,21 @@ _**Assistant**_
 
 ---
 
+<details>
+          <summary>MCP tool call</summary>
+      
+*Called tool*: time - get_current_time: Get current time in a specific timezones
 
+*Parameters*:
+  * timezone: Asia/Tokyo
+
+*Result*:
+{
+  "timezone": "Asia/Tokyo",
+  "datetime": "2025-07-25T04:17:18+09:00",
+  "is_dst": false
+}
+</details>
 
 ---
 
@@ -1433,7 +1447,21 @@ Lines added: 29, lines removed: 10
 
 ---
 
+<details>
+          <summary>MCP tool call</summary>
+      
+*Called tool*: time - get_current_time: Get current time in a specific timezones
 
+*Parameters*:
+  * timezone: Asia/Tokyo
+
+*Result*:
+{
+  "timezone": "Asia/Tokyo",
+  "datetime": "2025-07-25T04:22:33+09:00",
+  "is_dst": false
+}
+</details>
 
 ---
 
@@ -1536,7 +1564,21 @@ _**Assistant**_
 
 ---
 
+<details>
+          <summary>MCP tool call</summary>
+      
+*Called tool*: time - get_current_time: Get current time in a specific timezones
 
+*Parameters*:
+  * timezone: Asia/Tokyo
+
+*Result*:
+{
+  "timezone": "Asia/Tokyo",
+  "datetime": "2025-07-25T04:23:28+09:00",
+  "is_dst": false
+}
+</details>
 
 ---
 
@@ -2222,7 +2264,21 @@ Lines added: 220, lines removed: 1
 
 ---
 
+<details>
+          <summary>MCP tool call</summary>
+      
+*Called tool*: time - get_current_time: Get current time in a specific timezones
 
+*Parameters*:
+  * timezone: Asia/Tokyo
+
+*Result*:
+{
+  "timezone": "Asia/Tokyo",
+  "datetime": "2025-07-25T04:26:10+09:00",
+  "is_dst": false
+}
+</details>
 
 ---
 
@@ -2324,7 +2380,21 @@ _**Assistant**_
 
 ---
 
+<details>
+          <summary>MCP tool call</summary>
+      
+*Called tool*: time - get_current_time: Get current time in a specific timezones
 
+*Parameters*:
+  * timezone: Asia/Tokyo
+
+*Result*:
+{
+  "timezone": "Asia/Tokyo",
+  "datetime": "2025-07-25T04:27:23+09:00",
+  "is_dst": false
+}
+</details>
 
 ---
 
@@ -3075,71 +3145,9 @@ The model made no changes to the file.
 
 ---
 
-```bash
-py -3 test_production_environment.py
-```
-
-```
-PS C:\Users\downl\Desktop\professional-statistics-suite\professional-statistics-suite> py -3 test_production
-                                                                                       py -3 test_production
-_environment.py
-oad constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
-AMD GPU detection failed: [WinError 2] 指定されたファイルが見つかりません。
-AMD GPU detection failed: [WinError 2] 指定されたファイルが見つかりません。
-2025-07-25 04:29:21,567 - INFO - ✅ AI統合モジュール インポート成功
-2025-07-25 04:29:23,158 - INFO - 高度統計解析システム初期化 | cpu_cores: 12
-2025-07-25 04:29:23,158 - INFO - ✅ 高度統計モジュール インポート成功
-2025-07-25 04:29:23,196 - WARNING - g++ not available, if using conda: `conda install gxx`
-2025-07-25 04:29:23,196 - WARNING - g++ not detected!  PyTensor will be unable to compile C-implementations 
-and will default to Python. Performance may be severely degraded. To remove this warning, set PyTensor flags
- cxx to an empty string.
-2025-07-25 04:29:24,087 - INFO - arviz_base not installed
-2025-07-25 04:29:24,087 - INFO - arviz_stats not installed
-2025-07-25 04:29:24,088 - INFO - arviz_plots not installed
-2025-07-25 04:29:24,376 - INFO - 深化ベイズ統計解析システム初期化 | random_seed: 42
-2025-07-25 04:29:24,376 - INFO - ✅ ベイズ分析モジュール インポート成功
-2025-07-25 04:29:24,376 - INFO - ✅ モジュールインポートテスト完了
-2025-07-25 04:29:24,376 - INFO - ✅ モジュールインポート テスト成功
-2025-07-25 04:29:24,376 - INFO -
-==================================================
-2025-07-25 04:29:24,376 - INFO - テスト: データ読み込み
-2025-07-25 04:29:24,376 - INFO - ==================================================
-2025-07-25 04:29:24,377 - INFO - === データ読み込みテスト開始 ===
-2025-07-25 04:29:24,381 - INFO - ✅ data/basic_statistics_sample.csv 読み込み成功: 1000行 x 8列
-2025-07-25 04:29:24,385 - INFO - ✅ data/regression_sample.csv 読み込み成功: 1000行 x 6列
-2025-07-25 04:29:24,390 - INFO - ✅ data/machine_learning_sample.csv 読み込み成功: 1500行 x 12列
-2025-07-25 04:29:24,392 - INFO - ✅ data/medical_survival_sample.csv 読み込み成功: 500行 x 7列
-2025-07-25 04:29:24,395 - INFO - ✅ data/timeseries_sample.csv 読み込み成功: 1095行 x 3列
-2025-07-25 04:29:24,395 - INFO - ✅ データ読み込みテスト完了
-2025-07-25 04:29:24,395 - INFO - ✅ データ読み込み テスト成功
-2025-07-25 04:29:24,395 - INFO -
-==================================================
-2025-07-25 04:29:24,395 - INFO - テスト: AIOrchestrator
-2025-07-25 04:29:24,395 - INFO - ==================================================
-2025-07-25 04:29:24,395 - INFO - === AIOrchestratorテスト開始 ===
-2025-07-25 04:29:24,403 - INFO - 既存セッション 17 件を復旧しました
-2025-07-25 04:29:24,418 - INFO - Google AI API設定完了
-2025-07-25 04:29:24,419 - INFO - 🔍 3個のGGUFモデルを発見: ['mathstral-7B-v0.1.Q8_0.gguf', 'Phi-4-mini-reaso
-ning-Q8_0.gguf', 'lmstudio-community\\gemma-3n-E4B-it-text-GGUF\\gemma-3n-E4B-it-Q4_K_M.gguf']
-2025-07-25 04:29:24,650 - INFO - 初期化されたプロバイダー: ['google', 'ollama', 'lmstudio', 'koboldcpp']
-2025-07-25 04:29:24,652 - ERROR - 自動チェックポイント保存エラー: 'AIOrchestrator' object has no attribute '
-checkpoint_interval'
-2025-07-25 04:29:24,652 - INFO - ✅ AIOrchestrator初期化成功
-```
+Cancelled
 
 ---
-
-
-
----
-
-_**User**_
-
-続けて
-
----
-
-_**Assistant**_
 
 
 

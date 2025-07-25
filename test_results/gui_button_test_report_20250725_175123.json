@@ -1,0 +1,23 @@
+{
+  "test_summary": {
+    "start_time": "2025-07-25T17:50:08.236777",
+    "end_time": "2025-07-25T17:51:23.244446",
+    "duration": 75.007669,
+    "total_button_tests": 0,
+    "successful_tests": 0,
+    "failed_tests": 0
+  },
+  "debug_log_analysis": {
+    "total_logs": 0,
+    "button_clicks": 0,
+    "errors": 0,
+    "successful_clicks": 0,
+    "failed_clicks": 0,
+    "error_types": {},
+    "button_statistics": {},
+    "memory_warnings": 0,
+    "performance_issues": 0
+  },
+  "button_click_logs": [],
+  "recommendations": []
+}

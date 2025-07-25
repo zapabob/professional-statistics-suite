@@ -12,6 +12,10 @@ License: MIT
 
 import sys
 import os
+
+# プロジェクトのルートディレクトリをパスに追加
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import json
 import pickle
 import signal
@@ -60,6 +64,15 @@ from plotly.subplots import make_subplots
 # ユーティリティ
 from tqdm import tqdm
 import psutil
+
+# AI統合機能のインポート
+try:
+    from src.ai.ai_integration import AIOrchestrator, QueryProcessor, ContextManager, AnalysisContext
+    AI_INTEGRATION_AVAILABLE = True
+    ai_analyzer = None  # 必要時に初期化
+except ImportError as e:
+    AI_INTEGRATION_AVAILABLE = False
+    print("AI統合機能が利用できません（オプションライブラリが不足）")
 except ImportError as e:
     AI_INTEGRATION_AVAILABLE = False
     print("⚠️ AI統合機能が利用できません（オプションライブラリが不足）")

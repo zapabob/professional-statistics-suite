@@ -478,23 +478,33 @@ async def main():
     print("🧠 ローカルLLM統計補助システム")
     print("=" * 50)
     
-    # GGUFモデルファイルを検索
+    # 動的にGGUFモデルファイルを検索
     model_paths = [
-        "./models/mathstral-7B-v0.1.Q8_0.gguf",
-        "./models/Phi-4-mini-reasoning-Q8_0.gguf"
+        "./models/",
+        "../models/",
+        "../../models/",
+        "~/models/",
+        "~/Downloads/"
     ]
     
     available_model = None
-    for model_path in model_paths:
-        if Path(model_path).exists():
-            available_model = model_path
-            break
+    for base_path in model_paths:
+        search_path = Path(base_path).expanduser()
+        if search_path.exists():
+            # .ggufファイルを検索
+            gguf_files = list(search_path.glob('*.gguf'))
+            if gguf_files:
+                # サイズでソート（小さいモデルを優先）
+                gguf_files.sort(key=lambda x: x.stat().st_size)
+                available_model = str(gguf_files[0])
+                break
     
     if not available_model:
         print("❌ GGUFモデルファイルが見つかりません")
         print("💡 以下のパスにGGUFファイルを配置してください:")
         for path in model_paths:
             print(f"   - {path}")
+        print("\n🔧 AIサポートなしでも統計分析は利用可能です")
         return
     
     print(f"✅ GGUFモデルを発見: {available_model}")

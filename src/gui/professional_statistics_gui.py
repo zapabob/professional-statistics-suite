@@ -40,7 +40,7 @@ from src.statistics.survival_analysis import CompleteSurvivalAnalyzer as Surviva
 from src.statistics.advanced_statistics import AdvancedStatsAnalyzer as AdvancedStatistics
 from src.visualization.advanced_visualization import AdvancedVisualizer
 from src.security.audit_compliance_system import AuditTrailManager, ComplianceChecker
-from src.ai.contextual_retriever import ContextualRetriever
+from src.llm.model_manager import ModelManager
 from src.ai.gguf_model_selector import GGUFModelSelector, create_gguf_selector_dialog
 from src.gui.gui_responsiveness_optimizer import GUIResponsivenessOptimizer, ResponsivenessTestSuite
 
@@ -266,16 +266,16 @@ class ProfessionalStatisticsGUI:
         data_ops_frame.pack(fill=tk.X, padx=5, pady=5)
         
         # ボタン（応答性最適化）
-        load_button = ttk.Button(data_ops_frame, text="CSV読み込み", command=self.load_csv_data)
+        load_button = ttk.Button(data_ops_frame, text="CSV読み込み", command=lambda: self.log_button_click("CSV読み込み"))
         load_button.pack(side=tk.LEFT, padx=5)
         
-        save_button = ttk.Button(data_ops_frame, text="データ保存", command=self.save_data)
+        save_button = ttk.Button(data_ops_frame, text="データ保存", command=lambda: self.log_button_click("データ保存"))
         save_button.pack(side=tk.LEFT, padx=5)
         
-        clear_button = ttk.Button(data_ops_frame, text="データクリア", command=self.clear_data)
+        clear_button = ttk.Button(data_ops_frame, text="データクリア", command=lambda: self.log_button_click("データクリア"))
         clear_button.pack(side=tk.LEFT, padx=5)
         
-        preprocess_button = ttk.Button(data_ops_frame, text="前処理実行", command=self.run_data_preprocessing)
+        preprocess_button = ttk.Button(data_ops_frame, text="前処理実行", command=lambda: self.log_button_click("前処理実行"))
         preprocess_button.pack(side=tk.LEFT, padx=5)
         
         # 応答性最適化を適用
@@ -291,61 +291,13 @@ class ProfessionalStatisticsGUI:
         self.data_text = scrolledtext.ScrolledText(data_display_frame, height=20)
         self.data_text.pack(fill=tk.BOTH, expand=True)
 
-    def create_ai_analysis_tab(self):
-        """AI分析タブ（LLM切り替え機能強化版）"""
-        ai_frame = ttk.Frame(self.notebook)
-        self.notebook.add(ai_frame, text="🤖 AI分析")
-        
-        # LLMプロバイダー選択
-        provider_frame = ttk.LabelFrame(ai_frame, text="LLMプロバイダー選択", padding=10)
-        provider_frame.pack(fill=tk.X, padx=5, pady=5)
-        
-        # プロバイダー選択コンボボックス
-        self.provider_var = tk.StringVar(value="auto")
-        provider_combo = ttk.Combobox(provider_frame, textvariable=self.provider_var, 
-                                     values=["auto", "google", "ollama", "lmstudio", "koboldcpp"], 
-                                     state="readonly", width=15)
-        provider_combo.pack(side=tk.LEFT, padx=5)
-        ttk.Label(provider_frame, text="プロバイダー:").pack(side=tk.LEFT, padx=5)
-        
-        # プロバイダー状態表示
-        self.provider_status_label = ttk.Label(provider_frame, text="状態: 確認中...")
-        self.provider_status_label.pack(side=tk.RIGHT, padx=5)
-        
-        # プロバイダー状態更新ボタン
-        update_status_button = ttk.Button(provider_frame, text="状態更新", command=self.update_provider_status)
-        update_status_button.pack(side=tk.RIGHT, padx=5)
-        
-        # GGUFモデル選択ボタン
-        gguf_button = ttk.Button(provider_frame, text="GGUFモデル選択", command=self.select_gguf_model)
-        gguf_button.pack(side=tk.RIGHT, padx=5)
-        
-        # 応答性最適化を適用
-        update_status_button.configure(command=self.optimize_button_responsiveness(update_status_button, self.update_provider_status))
-        gguf_button.configure(command=self.optimize_button_responsiveness(gguf_button, self.select_gguf_model))
-        
-        # クエリ入力
-        query_frame = ttk.LabelFrame(ai_frame, text="自然言語クエリ", padding=10)
-        query_frame.pack(fill=tk.X, padx=5, pady=5)
-        
-        self.query_entry = ttk.Entry(query_frame, width=80)
-        self.query_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        
-        analyze_button = ttk.Button(query_frame, text="分析実行", command=self.execute_ai_analysis)
-        analyze_button.pack(side=tk.RIGHT, padx=5)
-        
-        # 応答性最適化を適用
-        analyze_button.configure(command=self.optimize_button_responsiveness(analyze_button, self.execute_ai_analysis))
-        
-        # 結果表示
-        result_frame = ttk.LabelFrame(ai_frame, text="AI分析結果", padding=10)
-        result_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        
-        self.ai_result_text = scrolledtext.ScrolledText(result_frame, height=25)
-        self.ai_result_text.pack(fill=tk.BOTH, expand=True)
-        
-        # 初期状態更新
-        self.update_provider_status()
+    def log_button_click(self, button_name):
+        self.log_message(f"Button '{button_name}' clicked.")
+
+    def create_chat_tab(self):
+        """AIチャットタブ"""
+        chat_frame = ChatTab(self.notebook, self.model_manager)
+        self.notebook.add(chat_frame, text="🤖 AIチャット")
 
     def create_advanced_statistics_tab(self):
         """高度統計分析タブ"""
@@ -362,7 +314,7 @@ class ProfessionalStatisticsGUI:
         ]
         
         def create_analysis_button(analysis_type):
-            return lambda: self.run_advanced_analysis(analysis_type)
+            return lambda: self.log_button_click(f"高度統計: {analysis_type}") and self.run_advanced_analysis(analysis_type)
         
         for i, analysis_type in enumerate(analysis_types):
             row = i // 4
@@ -386,10 +338,10 @@ class ProfessionalStatisticsGUI:
         options_frame = ttk.LabelFrame(bayes_frame, text="ベイズ分析オプション", padding=10)
         options_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        ttk.Button(options_frame, text="ベイズ回帰", command=lambda: self.run_bayesian_analysis("regression")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="ベイズ分類", command=lambda: self.run_bayesian_analysis("classification")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="ベイズ検定", command=lambda: self.run_bayesian_analysis("test")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="ベイズ推定", command=lambda: self.run_bayesian_analysis("estimation")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="ベイズ回帰", command=lambda: self.log_button_click("ベイズ回帰") and self.run_bayesian_analysis("regression")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="ベイズ分類", command=lambda: self.log_button_click("ベイズ分類") and self.run_bayesian_analysis("classification")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="ベイズ検定", command=lambda: self.log_button_click("ベイズ検定") and self.run_bayesian_analysis("test")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="ベイズ推定", command=lambda: self.log_button_click("ベイズ推定") and self.run_bayesian_analysis("estimation")).pack(side=tk.LEFT, padx=5)
         
         # 結果表示
         result_frame = ttk.LabelFrame(bayes_frame, text="ベイズ分析結果", padding=10)
@@ -407,10 +359,10 @@ class ProfessionalStatisticsGUI:
         options_frame = ttk.LabelFrame(survival_frame, text="生存時間分析オプション", padding=10)
         options_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        ttk.Button(options_frame, text="Kaplan-Meier推定", command=lambda: self.run_survival_analysis("kaplan_meier")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="Cox比例ハザード", command=lambda: self.run_survival_analysis("cox")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="生存関数推定", command=lambda: self.run_survival_analysis("survival_function")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="ハザード関数推定", command=lambda: self.run_survival_analysis("hazard_function")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="Kaplan-Meier推定", command=lambda: self.log_button_click("Kaplan-Meier推定") and self.run_survival_analysis("kaplan_meier")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="Cox比例ハザード", command=lambda: self.log_button_click("Cox比例ハザード") and self.run_survival_analysis("cox")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="生存関数推定", command=lambda: self.log_button_click("生存関数推定") and self.run_survival_analysis("survival_function")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="ハザード関数推定", command=lambda: self.log_button_click("ハザード関数推定") and self.run_survival_analysis("hazard_function")).pack(side=tk.LEFT, padx=5)
         
         # 結果表示
         result_frame = ttk.LabelFrame(survival_frame, text="生存時間分析結果", padding=10)
@@ -428,10 +380,10 @@ class ProfessionalStatisticsGUI:
         options_frame = ttk.LabelFrame(power_frame, text="検出力分析オプション", padding=10)
         options_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        ttk.Button(options_frame, text="サンプルサイズ計算", command=self.calculate_sample_size).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="検出力計算", command=self.calculate_power).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="効果量計算", command=self.calculate_effect_size).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="検出力曲線", command=self.plot_power_curve).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="サンプルサイズ計算", command=lambda: self.log_button_click("サンプルサイズ計算") and self.calculate_sample_size()).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="検出力計算", command=lambda: self.log_button_click("検出力計算") and self.calculate_power()).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="効果量計算", command=lambda: self.log_button_click("効果量計算") and self.calculate_effect_size()).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="検出力曲線", command=lambda: self.log_button_click("検出力曲線") and self.plot_power_curve()).pack(side=tk.LEFT, padx=5)
         
         # 結果表示
         result_frame = ttk.LabelFrame(power_frame, text="検出力分析結果", padding=10)
@@ -455,7 +407,7 @@ class ProfessionalStatisticsGUI:
         ]
         
         def create_viz_button(viz_type):
-            return lambda: self.create_advanced_visualization(viz_type)
+            return lambda: self.log_button_click(f"高度可視化: {viz_type}") and self.create_advanced_visualization(viz_type)
         
         for i, viz_type in enumerate(viz_types):
             row = i // 4
@@ -476,11 +428,11 @@ class ProfessionalStatisticsGUI:
         validation_options_frame = ttk.LabelFrame(validation_frame, text="仮定検証オプション", padding=10)
         validation_options_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        ttk.Button(validation_options_frame, text="正規性検定", command=lambda: self.validate_assumptions("normality")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(validation_options_frame, text="等分散性検定", command=lambda: self.validate_assumptions("homogeneity")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(validation_options_frame, text="独立性検定", command=lambda: self.validate_assumptions("independence")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(validation_options_frame, text="線形性検定", command=lambda: self.validate_assumptions("linearity")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(validation_options_frame, text="全仮定検証", command=lambda: self.validate_assumptions("all")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(validation_options_frame, text="正規性検定", command=lambda: self.log_button_click("正規性検定") and self.validate_assumptions("normality")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(validation_options_frame, text="等分散性検定", command=lambda: self.log_button_click("等分散性検定") and self.validate_assumptions("homogeneity")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(validation_options_frame, text="独立性検定", command=lambda: self.log_button_click("独立性検定") and self.validate_assumptions("independence")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(validation_options_frame, text="線形性検定", command=lambda: self.log_button_click("線形性検定") and self.validate_assumptions("linearity")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(validation_options_frame, text="全仮定検証", command=lambda: self.log_button_click("全仮定検証") and self.validate_assumptions("all")).pack(side=tk.LEFT, padx=5)
         
         # 結果表示
         result_frame = ttk.LabelFrame(validation_frame, text="仮定検証結果", padding=10)
@@ -498,10 +450,10 @@ class ProfessionalStatisticsGUI:
         options_frame = ttk.LabelFrame(ml_frame, text="機械学習オプション", padding=10)
         options_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        ttk.Button(options_frame, text="分類", command=lambda: self.run_machine_learning("classification")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="回帰", command=lambda: self.run_machine_learning("regression")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="クラスタリング", command=lambda: self.run_machine_learning("clustering")).pack(side=tk.LEFT, padx=5)
-        ttk.Button(options_frame, text="次元削減", command=lambda: self.run_machine_learning("dimensionality_reduction")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="分類", command=lambda: self.log_button_click("分類") and self.run_machine_learning("classification")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="回帰", command=lambda: self.log_button_click("回帰") and self.run_machine_learning("regression")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="クラスタリング", command=lambda: self.log_button_click("クラスタリング") and self.run_machine_learning("clustering")).pack(side=tk.LEFT, padx=5)
+        ttk.Button(options_frame, text="次元削減", command=lambda: self.log_button_click("次元削減") and self.run_machine_learning("dimensionality_reduction")).pack(side=tk.LEFT, padx=5)
         
         # 結果表示
         result_frame = ttk.LabelFrame(ml_frame, text="機械学習結果", padding=10)
@@ -519,11 +471,11 @@ class ProfessionalStatisticsGUI:
         report_options_frame = ttk.LabelFrame(reports_frame, text="レポート生成オプション", padding=10)
         report_options_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        ttk.Button(report_options_frame, text="包括的レポート", command=self.generate_comprehensive_report).pack(side=tk.LEFT, padx=5)
-        ttk.Button(report_options_frame, text="AI分析レポート", command=self.generate_ai_report).pack(side=tk.LEFT, padx=5)
-        ttk.Button(report_options_frame, text="統計手法レポート", command=self.generate_statistical_report).pack(side=tk.LEFT, padx=5)
-        ttk.Button(report_options_frame, text="ベイズ分析レポート", command=self.generate_bayesian_report).pack(side=tk.LEFT, padx=5)
-        ttk.Button(report_options_frame, text="生存時間分析レポート", command=self.generate_survival_report).pack(side=tk.LEFT, padx=5)
+        ttk.Button(report_options_frame, text="包括的レポート", command=lambda: self.log_button_click("包括的レポート") and self.generate_comprehensive_report).pack(side=tk.LEFT, padx=5)
+        ttk.Button(report_options_frame, text="AI分析レポート", command=lambda: self.log_button_click("AI分析レポート") and self.generate_ai_report).pack(side=tk.LEFT, padx=5)
+        ttk.Button(report_options_frame, text="統計手法レポート", command=lambda: self.log_button_click("統計手法レポート") and self.generate_statistical_report).pack(side=tk.LEFT, padx=5)
+        ttk.Button(report_options_frame, text="ベイズ分析レポート", command=lambda: self.log_button_click("ベイズ分析レポート") and self.generate_bayesian_report).pack(side=tk.LEFT, padx=5)
+        ttk.Button(report_options_frame, text="生存時間分析レポート", command=lambda: self.log_button_click("生存時間分析レポート") and self.generate_survival_report).pack(side=tk.LEFT, padx=5)
         
         # 結果表示
         result_frame = ttk.LabelFrame(reports_frame, text="レポート結果", padding=10)
@@ -541,10 +493,10 @@ class ProfessionalStatisticsGUI:
         audit_options_frame = ttk.LabelFrame(audit_frame, text="監査・コンプライアンスオプション", padding=10)
         audit_options_frame.pack(fill=tk.X, padx=5, pady=5)
         
-        ttk.Button(audit_options_frame, text="監査ログ表示", command=self.show_audit_logs).pack(side=tk.LEFT, padx=5)
-        ttk.Button(audit_options_frame, text="コンプライアンスチェック", command=self.run_compliance_check).pack(side=tk.LEFT, padx=5)
-        ttk.Button(audit_options_frame, text="データプライバシー監査", command=self.run_privacy_audit).pack(side=tk.LEFT, padx=5)
-        ttk.Button(audit_options_frame, text="セキュリティ監査", command=self.run_security_audit).pack(side=tk.LEFT, padx=5)
+        ttk.Button(audit_options_frame, text="監査ログ表示", command=lambda: self.log_button_click("監査ログ表示") and self.show_audit_logs).pack(side=tk.LEFT, padx=5)
+        ttk.Button(audit_options_frame, text="コンプライアンスチェック", command=lambda: self.log_button_click("コンプライアンスチェック") and self.run_compliance_check).pack(side=tk.LEFT, padx=5)
+        ttk.Button(audit_options_frame, text="データプライバシー監査", command=lambda: self.log_button_click("データプライバシー監査") and self.run_privacy_audit).pack(side=tk.LEFT, padx=5)
+        ttk.Button(audit_options_frame, text="セキュリティ監査", command=lambda: self.log_button_click("セキュリティ監査") and self.run_security_audit).pack(side=tk.LEFT, padx=5)
         
         # 結果表示
         result_frame = ttk.LabelFrame(audit_frame, text="監査・コンプライアンス結果", padding=10)
@@ -639,152 +591,7 @@ class ProfessionalStatisticsGUI:
         except Exception as e:
             messagebox.showerror("エラー", f"データ前処理に失敗しました: {e}")
 
-    # AI分析メソッド
-    def update_provider_status(self):
-        """プロバイダー状態の更新"""
-        try:
-            if self.ai_orchestrator is None:
-                self.provider_status_label.config(text="状態: AI統合機能なし")
-                return
-            
-            # 利用可能なプロバイダーを確認
-            available_providers = []
-            if hasattr(self.ai_orchestrator, 'providers') and self.ai_orchestrator.providers:
-                for name, provider in self.ai_orchestrator.providers.items():
-                    if hasattr(provider, 'is_available') and provider.is_available():
-                        available_providers.append(name)
-            
-            if available_providers:
-                status_text = f"状態: 利用可能 ({', '.join(available_providers)})"
-                self.provider_status_label.config(text=status_text)
-            else:
-                self.provider_status_label.config(text="状態: 利用可能なプロバイダーなし")
-                
-        except Exception as e:
-            self.provider_status_label.config(text=f"状態: エラー ({str(e)})")
-            self.log_message(f"プロバイダー状態更新エラー: {e}")
     
-    def select_gguf_model(self):
-        """GGUFモデル選択ダイアログを表示"""
-        try:
-            selected_path = create_gguf_selector_dialog(self.root, "GGUFモデル選択")
-            
-            if selected_path:
-                # 選択されたモデルをLMStudioプロバイダーに追加
-                if hasattr(self.ai_orchestrator, 'providers') and 'lmstudio' in self.ai_orchestrator.providers:
-                    lmstudio_provider = self.ai_orchestrator.providers['lmstudio']
-                    if hasattr(lmstudio_provider, 'scan_custom_directory'):
-                        # モデルファイルのディレクトリをスキャン
-                        model_dir = os.path.dirname(selected_path)
-                        custom_models = lmstudio_provider.scan_custom_directory(model_dir)
-                        
-                        if custom_models:
-                            messagebox.showinfo("成功", f"GGUFモデルを追加しました: {os.path.basename(selected_path)}")
-                            # プロバイダー状態を更新
-                            self.update_provider_status()
-                        else:
-                            messagebox.showwarning("警告", "GGUFモデルの追加に失敗しました")
-                    else:
-                        messagebox.showwarning("警告", "LMStudioプロバイダーが利用できません")
-                else:
-                    messagebox.showwarning("警告", "LMStudioプロバイダーが設定されていません")
-                    
-        except Exception as e:
-            messagebox.showerror("エラー", f"GGUFモデル選択中にエラーが発生しました: {str(e)}")
-            print(f"GGUFモデル選択エラー: {e}")
-    
-    def execute_ai_analysis(self):
-        """AI分析の実行（LLM切り替え機能強化版）"""
-        if self.ai_orchestrator is None:
-            messagebox.showwarning("警告", "AI分析機能が利用できません")
-            return
-            
-        query = self.query_entry.get().strip()
-        if not query:
-            messagebox.showwarning("警告", "クエリを入力してください")
-            return
-        
-        if self.data.empty:
-            messagebox.showwarning("警告", "データが読み込まれていません")
-            return
-        
-        # 選択されたプロバイダーを取得
-        selected_provider = self.provider_var.get()
-        if selected_provider == "auto":
-            selected_provider = None  # 自動選択
-        
-        # 非同期でAI分析を実行
-        threading.Thread(target=self._execute_ai_analysis_async, args=(query, selected_provider), daemon=True).start()
-
-    def _execute_ai_analysis_async(self, query, selected_provider=None):
-        """非同期AI分析（LLM切り替え機能強化版）"""
-        try:
-            # 分析コンテキストを作成
-            context = AnalysisContext(
-                user_id="gui_user",
-                session_id=str(uuid.uuid4()),
-                data_fingerprint=hash(str(self.data.shape)),
-                analysis_history=[]
-            )
-            
-            # プロバイダー設定をコンテキストに追加
-            if selected_provider and selected_provider != "auto":
-                context.privacy_settings = {
-                    "use_local_llm": selected_provider in ["ollama", "lmstudio", "koboldcpp"],
-                    "preferred_provider": selected_provider
-                }
-            
-            # AI分析の実行（非同期）
-            import asyncio
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
-            # エラーハンドリング強化
-            try:
-                result = loop.run_until_complete(
-                    self.ai_orchestrator.process_user_query(query, context, data=self.data)
-                )
-                
-                # 結果をメインスレッドで表示
-                self.root.after(0, self._display_ai_result, result)
-                
-            except AttributeError as e:
-                # analyze_queryメソッドが見つからない場合のフォールバック
-                if "analyze_query" in str(e):
-                    self.logger.warning("analyze_queryメソッドが見つかりません。process_user_queryを使用します。")
-                    result = loop.run_until_complete(
-                        self.ai_orchestrator.process_user_query(query, context, data=self.data)
-                    )
-                    self.root.after(0, self._display_ai_result, result)
-                else:
-                    raise
-                    
-        except Exception as e:
-            error_msg = str(e)
-            self.logger.error(f"AI分析エラー: {error_msg}")
-            
-            # エラーメッセージの改善
-            if "API key not valid" in error_msg:
-                error_msg = "Google API keyが無効です。ローカルLLMの使用を推奨します。"
-            elif "analyze_query" in error_msg:
-                error_msg = "AI統合エラーが発生しました。システムを再起動してください。"
-            elif "timeout" in error_msg.lower():
-                error_msg = "処理がタイムアウトしました。データサイズを確認してください。"
-            elif "provider" in error_msg.lower():
-                error_msg = f"プロバイダー '{selected_provider}' が利用できません。別のプロバイダーを選択してください。"
-            
-            self.root.after(0, self._display_ai_error, error_msg)
-
-    def _display_ai_result(self, result):
-        """AI分析結果の表示"""
-        self.ai_result_text.delete(1.0, tk.END)
-        self.ai_result_text.insert(tk.END, str(result))
-        self.log_message("AI分析を実行しました")
-
-    def _display_ai_error(self, error_msg):
-        """AI分析エラーの表示"""
-        messagebox.showerror("AI分析エラー", error_msg)
-        self.log_message(f"AI分析エラー: {error_msg}")
 
     # 高度統計分析メソッド
     def run_advanced_analysis(self, analysis_type):
@@ -1383,14 +1190,18 @@ class ProfessionalStatisticsGUI:
 
     def load_implementation_logs(self):
         """実装ログの読み込み"""
+        log_dir = "_docs"
+        all_log_content = []
         try:
-            log_file = "_docs/implementation_log_2025-01-27.md"
-            if os.path.exists(log_file):
-                with open(log_file, 'r', encoding='utf-8') as f:
-                    log_content = f.read()
-                return log_content
-            else:
-                return "実装ログファイルが見つかりません"
+            if os.path.exists(log_dir):
+                for filename in sorted(os.listdir(log_dir)):
+                    if filename.endswith(".md") and len(filename) >= 10 and filename[:10].replace("-", "").isdigit():
+                        file_path = os.path.join(log_dir, filename)
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            all_log_content.append(f.read())
+                if all_log_content:
+                    return "\n\n---\n\n".join(all_log_content)
+            return "実装ログファイルが見つかりません"
         except Exception as e:
             return f"実装ログ読み込みエラー: {e}"
 

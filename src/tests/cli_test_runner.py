@@ -25,9 +25,9 @@ from src.tests.e2e_test_automation import E2ETestAutomation
 from src.tests.gui_button_test_automation import GUIButtonTestAutomation
 from src.tests.production_environment_test import ProductionEnvironmentTest
 from src.tests.integrated_test_runner import IntegratedTestRunner
-from src.tests.test_performance_optimizer import TestOptimizer, PerformanceProfiler
+from src.tests.performance_optimizer import TestOptimizer, PerformanceProfiler
 from src.tests.parallel_test_runner import ParallelTestRunner, PytestXdistRunner
-from src.tests.test_coverage_analyzer import CoverageAnalyzer, TestCoverageGenerator
+from src.tests.coverage_analyzer import CoverageAnalyzer, TestCoverageGenerator
 from src.tests.html_report_generator import ReportManager, TestResult, CoverageData, PerformanceMetrics
 from src.tests.test_data_manager import TestDataManager, TestDataFactory, DataGenerationConfig
 

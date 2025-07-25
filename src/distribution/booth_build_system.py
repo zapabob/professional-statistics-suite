@@ -13,6 +13,56 @@ import hashlib
 import zipfile
 from pathlib import Path
 from typing import Dict, List, Any
+
+class BoothBuilder:
+    """Booth版ビルドシステム"""
+    
+    def __init__(self, project_root: str):
+        self.project_root = Path(project_root)
+        self.dist_dir = self.project_root / "dist"
+        self.build_dir = self.project_root / "build"
+    
+    def build_booth_version(self, entry_point: str, icon_path: str = None, additional_files: List[str] = None) -> Dict[str, Any]:
+        """Booth版ビルド実行"""
+        try:
+            # PyInstallerでビルド
+            cmd = [
+                "pyinstaller",
+                "--onefile",
+                "--windowed",
+                "--name=StatisticsSuite_Booth",
+                entry_point
+            ]
+            
+            if icon_path and os.path.exists(icon_path):
+                cmd.extend(["--icon", icon_path])
+            
+            # 追加ファイル
+            if additional_files:
+                for file_path in additional_files:
+                    if os.path.exists(file_path):
+                        cmd.extend(["--add-data", f"{file_path};."])
+            
+            # ビルド実行
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            
+            if result.returncode != 0:
+                return {"success": False, "error": result.stderr}
+            
+            # パッケージ作成
+            package_path = self._create_booth_package()
+            
+            return {
+                "success": True,
+                "package_path": package_path,
+                "build_dir": str(self.dist_dir)
+            }
+            
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+    
+    def _create_booth_package(self) -> str:
+        """Booth版パッケージ作成"""
         package_name = f"StatisticsSuite_Booth_v1.0.0.zip"
         package_path = self.project_root / package_name
         

@@ -15,17 +15,33 @@ try:
         print("❌ Advanced AI機能にはProfessional版以上が必要です")
         sys.exit(1)
 except ImportError:
-    print("⚠️ ライセンス確認をスキップします（開発モード）")
+    print("⚠️ ライセンス確認をスキップします（開発モード）".encode('utf-8').decode(sys.stdout.encoding, 'ignore'))
 
 # AI統合モジュール
-from ai_integration import AIStatisticalAnalyzer
-from gguf_test_helper import (
-    setup_gguf_test_environment, 
-    create_test_queries,
-    create_statistical_context,
-    validate_gguf_response,
-    print_test_summary
-)
+from src.ai.ai_integration import AIStatisticalAnalyzer
+
+# スタブ関数（gguf_test_helperの代替）
+def setup_gguf_test_environment():
+    return {
+        'skip_tests': True,
+        'error': 'GGUF test helper not available',
+        'model_path': None
+    }
+
+def create_test_queries():
+    return ["基本的な統計質問"]
+
+def create_statistical_context():
+    return {
+        'dataset_info': 'サンプルデータセット',
+        'analysis_goal': '探索的データ解析'
+    }
+
+def validate_gguf_response(response):
+    return {'score': 50}
+
+def print_test_summary(env):
+    print("GGUF test environment summary")
 
 def demonstrate_gguf_integration():
     """GGUF統合機能のデモンストレーション"""

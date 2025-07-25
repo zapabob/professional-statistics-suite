@@ -1,0 +1,49 @@
+{
+  "analysis_timestamp": "2025-07-25T17:53:57.566324",
+  "button_analysis": {
+    "total_clicks": 16,
+    "successful_clicks": 16,
+    "failed_clicks": 0,
+    "button_statistics": {
+      "CSV読み込み": 1,
+      "分析実行": 3,
+      "記述統計": 1,
+      "相関分析": 1,
+      "回帰分析": 1,
+      "分散分析": 1,
+      "クラスター分析": 1,
+      "因子分析": 1,
+      "時系列分析": 2,
+      "多変量分析": 1,
+      "ベイズ回帰": 1,
+      "ベイズ分類": 1,
+      "ベイズ検定": 1
+    },
+    "function_statistics": {
+      "load_csv_data": 1,
+      "execute_ai_analysis": 3,
+      "<lambda>": 12
+    },
+    "timing_analysis": {},
+    "issues_found": []
+  },
+  "identified_issues": [
+    {
+      "type": "lambda_function",
+      "severity": "medium",
+      "description": "ラムダ関数が多用されている (12回)",
+      "suggestion": "専用の関数メソッドに変更"
+    }
+  ],
+  "applied_fixes": [
+    "ラムダ関数を専用メソッドに変更"
+  ],
+  "recommendations": [
+    {
+      "type": "lambda_function_replacement",
+      "priority": "medium",
+      "description": "ラムダ関数の多用 (12回)",
+      "suggestion": "専用のメソッドに変更してコードの可読性を向上"
+    }
+  ]
+}

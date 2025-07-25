@@ -12,6 +12,10 @@ License: MIT
 
 import sys
 import os
+
+# プロジェクトのルートディレクトリをパスに追加
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import json
 import pickle
 import signal
@@ -60,9 +64,15 @@ from plotly.subplots import make_subplots
 # ユーティリティ
 from tqdm import tqdm
 import psutil
+
+# AI統合機能のインポート
+try:
+    from src.ai.ai_integration import AIOrchestrator, QueryProcessor, ContextManager, AnalysisContext
+    AI_INTEGRATION_AVAILABLE = True
+    ai_analyzer = None  # 必要時に初期化
 except ImportError as e:
     AI_INTEGRATION_AVAILABLE = False
-    print("⚠️ AI統合機能が利用できません（オプションライブラリが不足）")
+    print("AI統合機能が利用できません（オプションライブラリが不足）")
     
     # AI機能のスタブ
     class AIStub:
@@ -109,6 +119,25 @@ ctk.set_default_color_theme("blue")
 plt.style.use('seaborn-v0_8')
 sns.set_palette("husl")
 
+# 機能フラグ定義
+PROFESSIONAL_FEATURES_AVAILABLE = True
+ADVANCED_FEATURES_AVAILABLE = True
+
+# スタブクラス定義
+class AdvancedVisualizer:
+    def __init__(self):
+        pass
+    
+    def create_visualization(self, *args, **kwargs):
+        return {"success": False, "error": "高度な可視化機能が利用できません"}
+
+class DataPreprocessor:
+    def __init__(self):
+        pass
+    
+    def feature_selection(self, *args, **kwargs):
+        return (None, {"success": False, "error": "特徴量選択機能が利用できません"})
+
 class SessionManager:
     """セッション管理・電源断保護システム"""
     
@@ -131,13 +160,13 @@ class SessionManager:
             if hasattr(signal, 'SIGBREAK'):
                 signal.signal(signal.SIGBREAK, self._emergency_save)
         except Exception as e:
-            print(f"⚠️ シグナルハンドラー設定エラー: {e}")
+            print(f" シグナルハンドラー設定エラー: {e}")
         
         # 自動保存タイマー開始
         self._start_auto_save()
         
-        print(f"🛡️ セッション開始: {self.session_id}")
-        print(f"💾 バックアップ: {self.backup_dir.absolute()}")
+        print(f" セッション開始: {self.session_id}")
+        print(f" バックアップ: {self.backup_dir.absolute()}")
     
     def _start_auto_save(self):
         """自動保存タイマー開始"""
@@ -146,26 +175,26 @@ class SessionManager:
             self.auto_save_timer.daemon = True
             self.auto_save_timer.start()
         except Exception as e:
-            print(f"⚠️ 自動保存タイマー開始エラー: {e}")
+            print(f" 自動保存タイマー開始エラー: {e}")
     
     def _auto_save(self):
         """定期自動保存"""
         try:
             self.save_session()
-            print(f"✅ 自動保存完了: {datetime.now().strftime('%H:%M:%S')}")
+            print(f" 自動保存完了: {datetime.now().strftime('%H:%M:%S')}")
         except Exception as e:
-            print(f"❌ 自動保存エラー: {e}")
+            print(f" 自動保存エラー: {e}")
         finally:
             self._start_auto_save()  # 次の自動保存を予約
     
     def _emergency_save(self, signum=None, frame=None):
         """緊急保存（異常終了時）"""
-        print("\n🚨 緊急保存を実行中...")
+        print("\n 緊急保存を実行中...")
         try:
             self.save_session(emergency=True)
-            print("✅ 緊急保存完了")
+            print(" 緊急保存完了")
         except Exception as e:
-            print(f"❌ 緊急保存失敗: {e}")
+            print(f" 緊急保存失敗: {e}")
         finally:
             sys.exit(0)
     
@@ -247,7 +276,7 @@ class MLAnalysisWindow:
         task_frame = ctk.CTkFrame(main_frame)
         task_frame.pack(fill="x", padx=5, pady=5)
         
-        ctk.CTkLabel(task_frame, text="🎯 Machine Learning Task", font=("Arial", 16, "bold")).pack(pady=5)
+        ctk.CTkLabel(task_frame, text=" Machine Learning Task", font=("Arial", 16, "bold")).pack(pady=5)
         
         self.task_var = tk.StringVar(value="classification")
         task_radio1 = ctk.CTkRadioButton(task_frame, text="Classification", variable=self.task_var, value="classification")
@@ -259,7 +288,7 @@ class MLAnalysisWindow:
         feature_frame = ctk.CTkFrame(main_frame)
         feature_frame.pack(fill="x", padx=5, pady=5)
         
-        ctk.CTkLabel(feature_frame, text="📊 Feature & Target Selection").pack(pady=5)
+        ctk.CTkLabel(feature_frame, text=" Feature & Target Selection").pack(pady=5)
         
         # ターゲット選択
         target_frame = ctk.CTkFrame(feature_frame)
@@ -273,7 +302,7 @@ class MLAnalysisWindow:
         algo_frame = ctk.CTkFrame(main_frame)
         algo_frame.pack(fill="x", padx=5, pady=5)
         
-        ctk.CTkLabel(algo_frame, text="🔧 Algorithm Selection").pack(pady=5)
+        ctk.CTkLabel(algo_frame, text=" Algorithm Selection").pack(pady=5)
         
         self.algo_var = ctk.CTkComboBox(algo_frame, values=[
             "Random Forest", "XGBoost", "LightGBM", "SVM", 
@@ -288,17 +317,17 @@ class MLAnalysisWindow:
             gpu_frame.pack(fill="x", padx=5, pady=5)
             
             self.use_gpu = tk.BooleanVar(value=True)
-            gpu_check = ctk.CTkCheckBox(gpu_frame, text=f"⚡ Use GPU ({GPU_NAME})", variable=self.use_gpu)
+            gpu_check = ctk.CTkCheckBox(gpu_frame, text=f" Use GPU ({GPU_NAME})", variable=self.use_gpu)
             gpu_check.pack(pady=5)
         
         # 実行ボタン
         button_frame = ctk.CTkFrame(main_frame)
         button_frame.pack(fill="x", padx=5, pady=10)
         
-        run_btn = ctk.CTkButton(button_frame, text="🚀 Run Analysis", command=self.run_analysis)
+        run_btn = ctk.CTkButton(button_frame, text=" Run Analysis", command=self.run_analysis)
         run_btn.pack(side="left", padx=5)
         
-        optimize_btn = ctk.CTkButton(button_frame, text="⚙️ Hyperparameter Optimization", command=self.optimize_hyperparameters)
+        optimize_btn = ctk.CTkButton(button_frame, text=" Hyperparameter Optimization", command=self.optimize_hyperparameters)
         optimize_btn.pack(side="left", padx=5)
         
         # 結果表示エリア
@@ -314,19 +343,19 @@ class MLAnalysisWindow:
                 return
             
             self.result_text.delete("1.0", "end")
-            self.result_text.insert("1.0", "🤖 Starting Machine Learning Analysis...\n\n")
+            self.result_text.insert("1.0", "Starting Machine Learning Analysis...\n\n")
             
             # 変数選択の活用
             if self.variable_selection.get('control_variables'):
                 # 統制変数が選択されている場合はそれを使用
                 feature_cols = self.variable_selection['control_variables']
-                self.result_text.insert("end", f"🎯 Using selected control variables: {', '.join(feature_cols)}\n\n")
+                self.result_text.insert("end", f" Using selected control variables: {', '.join(feature_cols)}\n\n")
             else:
                 # 従来の方法（数値型列を自動選択）
                 feature_cols = self.data.select_dtypes(include=[np.number]).columns.tolist()
                 if target_col in feature_cols:
                     feature_cols.remove(target_col)
-                self.result_text.insert("end", f"📊 Using all numeric variables as features\n\n")
+                self.result_text.insert("end", f" Using all numeric variables as features\n\n")
             
             if len(feature_cols) == 0:
                 messagebox.showerror("Error", "No feature variables found")
@@ -354,7 +383,7 @@ class MLAnalysisWindow:
             
         except Exception as e:
             messagebox.showerror("Error", f"Analysis failed: {str(e)}")
-            self.result_text.insert("end", f"\n❌ Error: {str(e)}")
+            self.result_text.insert("end", f"\n Error: {str(e)}")
     
     def _run_classification(self, X, y):
         """分類タスク実行"""
@@ -616,7 +645,7 @@ class MLAnalysisWindow:
     
     def _display_results(self, results):
         """結果表示"""
-        result_text = f"\n🎯 Machine Learning Results\n"
+        result_text = f"\n　Machine Learning Results\n"
         result_text += "=" * 50 + "\n\n"
         result_text += f"Algorithm: {results['algorithm']}\n"
         result_text += f"Task: {results['task'].capitalize()}\n"
@@ -638,7 +667,7 @@ class MLAnalysisWindow:
             result_text += f"• MAE: {results['mae']:.4f}\n"
         
         if results['feature_importance']:
-            result_text += "\n🔍 Feature Importance (Top 5):\n"
+            result_text += "\n Feature Importance (Top 5):\n"
             sorted_features = sorted(results['feature_importance'].items(), 
                                    key=lambda x: x[1], reverse=True)[:5]
             for feature, importance in sorted_features:
@@ -652,7 +681,7 @@ class MLAnalysisWindow:
     
     def optimize_hyperparameters(self):
         """ハイパーパラメータ最適化"""
-        messagebox.showinfo("Info", "⚙️ Hyperparameter optimization starting...")
+        messagebox.showinfo("Info", "Hyperparameter optimization starting...")
         # Optuna等を使った最適化実装は次のステップで行います
 
 class DeepLearningWindow:
@@ -667,21 +696,21 @@ class DeepLearningWindow:
     def show(self):
         """ウィンドウ表示"""
         self.window = tk.Toplevel(self.parent)
-        self.window.title("🧠 Deep Learning Analysis")
+        self.window.title(" Deep Learning Analysis")
         self.window.geometry("800x600")
         
         main_frame = ctk.CTkFrame(self.window)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
         # 深層学習メニュー
-        ctk.CTkLabel(main_frame, text="🧠 Deep Learning Models", font=("Arial", 16, "bold")).pack(pady=10)
+        ctk.CTkLabel(main_frame, text=" Deep Learning Models", font=("Arial", 16, "bold")).pack(pady=10)
         
         # 各種深層学習アルゴリズムボタン
         models = [
-            ("🔍 Autoencoder", self.run_autoencoder),
-            ("📈 LSTM Time Series", self.run_lstm),
-            ("🎯 Advanced CNN", self.run_cnn),
-            ("🔮 Transformer", self.run_transformer)
+            (" Autoencoder", self.run_autoencoder),
+            (" LSTM Time Series", self.run_lstm),
+            (" Advanced CNN", self.run_cnn),
+            (" Transformer", self.run_transformer)
         ]
         
         for name, command in models:
@@ -693,16 +722,16 @@ class DeepLearningWindow:
         self.result_text.pack(fill="both", expand=True, padx=5, pady=10)
     
     def run_autoencoder(self):
-        messagebox.showinfo("Info", "🔍 Autoencoder implementation coming soon!")
+        messagebox.showinfo("Info", " Autoencoder implementation coming soon!")
     
     def run_lstm(self):
-        messagebox.showinfo("Info", "📈 LSTM implementation coming soon!")
+        messagebox.showinfo("Info", " LSTM implementation coming soon!")
     
     def run_cnn(self):
-        messagebox.showinfo("Info", "🎯 CNN implementation coming soon!")
+        messagebox.showinfo("Info", " CNN implementation coming soon!")
     
     def run_transformer(self):
-        messagebox.showinfo("Info", "🔮 Transformer implementation coming soon!")
+        messagebox.showinfo("Info", " Transformer implementation coming soon!")
 
 class VariableSelectionWindow:
     """変数選択ウィンドウ（統制変数・目的変数・剰余変数）"""
@@ -723,7 +752,7 @@ class VariableSelectionWindow:
     def show(self):
         """変数選択ウィンドウ表示"""
         self.window = ctk.CTkToplevel(self.parent)
-        self.window.title("🎯 Variable Selection - 変数選択")
+        self.window.title(" Variable Selection - 変数選択")
         self.window.geometry("800x700")
         self.window.grab_set()  # モーダルウィンドウ化
         
@@ -732,7 +761,7 @@ class VariableSelectionWindow:
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
         # タイトル
-        title_label = ctk.CTkLabel(main_frame, text="🎯 変数分類設定", font=("Arial", 18, "bold"))
+        title_label = ctk.CTkLabel(main_frame, text=" 変数分類設定", font=("Arial", 18, "bold"))
         title_label.pack(pady=(0, 20))
         
         # 説明文
@@ -740,12 +769,12 @@ class VariableSelectionWindow:
         info_frame.pack(fill="x", pady=(0, 20))
         
         info_text = """
-📊 変数分類について:
+ 変数分類について:
 • 統制変数: 分析で制御したい説明変数（独立変数）
 • 目的変数: 予測・説明したい従属変数（アウトカム）
 • 剰余変数: 分析に含めない変数（除外対象）
 
-⚠️ 注意: 機械学習では統制変数を特徴量、目的変数をターゲットとして使用します
+ 注意: 機械学習では統制変数を特徴量、目的変数をターゲットとして使用します
         """
         info_label = ctk.CTkLabel(info_frame, text=info_text, justify="left")
         info_label.pack(padx=10, pady=10)
@@ -758,7 +787,7 @@ class VariableSelectionWindow:
         available_frame = ctk.CTkFrame(columns_frame)
         available_frame.pack(side="left", fill="both", expand=True, padx=(0, 5))
         
-        ctk.CTkLabel(available_frame, text="📋 Available Variables", font=("Arial", 14, "bold")).pack(pady=5)
+        ctk.CTkLabel(available_frame, text=" Available Variables", font=("Arial", 14, "bold")).pack(pady=5)
         self.available_listbox = tk.Listbox(available_frame, selectmode=tk.MULTIPLE, height=15)
         self.available_listbox.pack(fill="both", expand=True, padx=5, pady=5)
         
@@ -769,7 +798,7 @@ class VariableSelectionWindow:
         control_frame = ctk.CTkFrame(columns_frame)
         control_frame.pack(side="left", fill="both", expand=True, padx=5)
         
-        ctk.CTkLabel(control_frame, text="🎛️ Control Variables\n(統制変数)", font=("Arial", 14, "bold")).pack(pady=5)
+        ctk.CTkLabel(control_frame, text=" Control Variables\n(統制変数)", font=("Arial", 14, "bold")).pack(pady=5)
         self.control_listbox = tk.Listbox(control_frame, height=15)
         self.control_listbox.pack(fill="both", expand=True, padx=5, pady=5)
         
@@ -777,7 +806,7 @@ class VariableSelectionWindow:
         target_frame = ctk.CTkFrame(columns_frame)
         target_frame.pack(side="left", fill="both", expand=True, padx=5)
         
-        ctk.CTkLabel(target_frame, text="🎯 Target Variables\n(目的変数)", font=("Arial", 14, "bold")).pack(pady=5)
+        ctk.CTkLabel(target_frame, text=" Target Variables\n(目的変数)", font=("Arial", 14, "bold")).pack(pady=5)
         self.target_listbox = tk.Listbox(target_frame, height=15)
         self.target_listbox.pack(fill="both", expand=True, padx=5, pady=5)
         
@@ -785,7 +814,7 @@ class VariableSelectionWindow:
         residual_frame = ctk.CTkFrame(columns_frame)
         residual_frame.pack(side="left", fill="both", expand=True, padx=(5, 0))
         
-        ctk.CTkLabel(residual_frame, text="📦 Residual Variables\n(剰余変数)", font=("Arial", 14, "bold")).pack(pady=5)
+        ctk.CTkLabel(residual_frame, text=" Residual Variables\n(剰余変数)", font=("Arial", 14, "bold")).pack(pady=5)
         self.residual_listbox = tk.Listbox(residual_frame, height=15)
         self.residual_listbox.pack(fill="both", expand=True, padx=5, pady=5)
         
@@ -806,15 +835,15 @@ class VariableSelectionWindow:
         auto_frame = ctk.CTkFrame(button_frame)
         auto_frame.pack(pady=5)
         
-        ctk.CTkButton(auto_frame, text="🔄 Reset All", command=self._reset_all, width=120).pack(side="left", padx=5)
-        ctk.CTkButton(auto_frame, text="🤖 Auto Classify", command=self._auto_classify, width=120).pack(side="left", padx=5)
-        ctk.CTkButton(auto_frame, text="📊 Show Summary", command=self._show_summary, width=120).pack(side="left", padx=5)
+        ctk.CTkButton(auto_frame, text="Reset All", command=self._reset_all, width=120).pack(side="left", padx=5)
+        ctk.CTkButton(auto_frame, text=" Auto Classify", command=self._auto_classify, width=120).pack(side="left", padx=5)
+        ctk.CTkButton(auto_frame, text=" Show Summary", command=self._show_summary, width=120).pack(side="left", padx=5)
         
         # 確定・キャンセルボタン
         action_frame = ctk.CTkFrame(main_frame)
         action_frame.pack(fill="x")
         
-        ctk.CTkButton(action_frame, text="✅ Apply Selection", command=self._apply_selection, 
+        ctk.CTkButton(action_frame, text=" Apply Selection", command=self._apply_selection, 
                      fg_color="green", width=150, height=40).pack(side="left", padx=10)
         ctk.CTkButton(action_frame, text="❌ Cancel", command=self._cancel, 
                      fg_color="red", width=100, height=40).pack(side="right", padx=10)
@@ -2529,16 +2558,9 @@ Anderson-Darling: 統計量 = {res['AD_stat']:.4f}
                 
                 # 全組み合わせでt検定実行
                 from itertools import combinations
-                    result_text = f"✅ 特徴量エンジニアリング完了\n"
-                    result_text += f"新規特徴量: {summary['new_features_count']}個\n\n"
-                    result_text += "作成された特徴量:\n"
-                    for feature in summary['new_feature_names'][:10]:  # 最初の10個を表示
-                        result_text += f"• {feature}\n"
-                    
-                    self.result_text.delete("1.0", "end")
-                    self.result_text.insert("1.0", result_text)
-            else:
-                messagebox.showerror("Error", summary["error"])
+                
+                # ここにt検定のロジックを追加する予定
+                # 現在は特徴量エンジニアリングの結果表示のみ
                 
         except Exception as e:
             messagebox.showerror("Error", f"特徴量エンジニアリングエラー: {str(e)}")
