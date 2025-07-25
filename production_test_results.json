@@ -1,0 +1,70 @@
+{
+  "summary": {
+    "total_tests": 6,
+    "successful_tests": 3,
+    "failed_tests": 3,
+    "success_rate": 50.0,
+    "total_execution_time": 1.3567709922790527,
+    "average_execution_time": 0.22612849871317545,
+    "total_memory_usage_mb": 13782.51171875,
+    "average_memory_usage_mb": 2297.0852864583335,
+    "average_cpu_usage_percent": 47.35
+  },
+  "test_results": [
+    {
+      "test_name": "System Resources Test",
+      "success": false,
+      "execution_time": 1.005711317062378,
+      "memory_usage_mb": 13414.8828125,
+      "cpu_usage_percent": 20.0,
+      "error_message": "CPU: 20.0%, Memory: 13414.9MB, Disk: 83.4%",
+      "timestamp": "2025-07-25 07:11:55.645160"
+    },
+    {
+      "test_name": "Data Processing Test",
+      "success": false,
+      "execution_time": 0.04018402099609375,
+      "memory_usage_mb": 0,
+      "cpu_usage_percent": 0,
+      "error_message": "could not convert string to float: 'B'",
+      "timestamp": "2025-07-25 07:11:55.686345"
+    },
+    {
+      "test_name": "GUI Creation Test",
+      "success": true,
+      "execution_time": 0.21320891380310059,
+      "memory_usage_mb": 90.66015625,
+      "cpu_usage_percent": 87.5,
+      "error_message": null,
+      "timestamp": "2025-07-25 07:11:56.009794"
+    },
+    {
+      "test_name": "File Operations Test",
+      "success": true,
+      "execution_time": 0.05029559135437012,
+      "memory_usage_mb": 91.97265625,
+      "cpu_usage_percent": 100.0,
+      "error_message": null,
+      "timestamp": "2025-07-25 07:11:56.191967"
+    },
+    {
+      "test_name": "Memory Stress Test",
+      "success": true,
+      "execution_time": 0.04686570167541504,
+      "memory_usage_mb": 93.27734375,
+      "cpu_usage_percent": 51.9,
+      "error_message": null,
+      "timestamp": "2025-07-25 07:11:56.340869"
+    },
+    {
+      "test_name": "Error Handling Test",
+      "success": false,
+      "execution_time": 0.0005054473876953125,
+      "memory_usage_mb": 91.71875,
+      "cpu_usage_percent": 24.7,
+      "error_message": "Only 1 errors were handled",
+      "timestamp": "2025-07-25 07:11:56.443266"
+    }
+  ],
+  "timestamp": "2025-07-25T07:11:56.443266"
+}

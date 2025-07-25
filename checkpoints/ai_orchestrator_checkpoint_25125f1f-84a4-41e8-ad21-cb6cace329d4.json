@@ -1,0 +1,48 @@
+{
+  "session_id": "25125f1f-84a4-41e8-ad21-cb6cace329d4",
+  "timestamp": "2025-07-25T07:52:55.882474",
+  "providers": [
+    "google",
+    "ollama",
+    "lmstudio",
+    "koboldcpp"
+  ],
+  "context_manager_state": {
+    "user_id": "checkpoint",
+    "session_id": "25125f1f-84a4-41e8-ad21-cb6cace329d4",
+    "session_start": "2025-07-25T07:52:55.882474",
+    "current_expertise_level": "intermediate",
+    "analysis_patterns": {},
+    "data_fingerprint": "checkpoint",
+    "privacy_settings": {
+      "use_local_llm": false,
+      "anonymize_data": true
+    },
+    "user_preferences": {
+      "preferred_visualization": "plotly",
+      "explanation_style": "detailed",
+      "language": "ja",
+      "auto_save": true
+    },
+    "learning_progress": {},
+    "favorite_methods": [],
+    "context_tags": []
+  },
+  "statistical_analyzer_state": {
+    "available_models": {
+      "google": [
+        "gemini-2.5-flash-exp",
+        "gemini-2.5-flash-lite-exp"
+      ],
+      "ollama": [
+        "llama3.1",
+        "llama3.2",
+        "llama3.3"
+      ],
+      "lmstudio": [],
+      "koboldcpp": [
+        "local-model"
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "edition": "GPU_Accelerated",
+  "version": "2.0.0",
+  "features": [
+    "basic",
+    "advanced",
+    "ai",
+    "gpu",
+    "optimized"
+  ],
+  "trial": false,
+  "trial_days": 30,
+  "build_timestamp": "2025-06-19T04:52:25.328234",
+  "license_required": true
+}

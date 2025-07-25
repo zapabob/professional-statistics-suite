@@ -1,0 +1,82 @@
+# Core dependencies
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+scikit-learn>=1.0.0
+plotly>=5.0.0
+dash>=2.0.0
+dash-bootstrap-components>=1.0.0
+
+# GUI dependencies
+tkinter-tooltip>=2.0.0
+customtkinter>=5.0.0
+
+# Data processing
+openpyxl>=3.0.0
+xlrd>=2.0.0
+python-docx>=0.8.11
+PyPDF2>=2.0.0
+
+# AI and ML
+openai>=0.27.0
+anthropic>=0.3.0
+langchain>=0.0.200
+transformers>=4.20.0
+torch>=1.12.0
+sentence-transformers>=2.2.0
+
+# Web scraping and automation
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+selenium>=4.0.0
+playwright>=1.25.0
+
+# Database
+psycopg2-binary>=2.9.0
+sqlalchemy>=1.4.0
+
+# Configuration and utilities
+pyyaml>=6.0
+python-dotenv>=0.19.0
+click>=8.0.0
+rich>=12.0.0
+tqdm>=4.64.0
+
+# Testing dependencies
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-xdist>=3.0.0
+pytest-playwright>=0.4.0
+pytest-html>=3.1.0
+pytest-json-report>=1.5.0
+
+# Code quality and formatting
+black>=22.0.0
+flake8>=5.0.0
+isort>=5.10.0
+mypy>=0.991
+bandit>=1.7.0
+safety>=2.3.0
+
+# Performance monitoring
+psutil>=5.9.0
+memory-profiler>=0.60.0
+line-profiler>=3.5.0
+
+# Coverage analysis
+coverage>=6.4.0
+
+# HTML report generation
+jinja2>=3.1.0
+
+# Data management
+pyyaml>=6.0
+
+# CI/CD and automation
+github-actions>=1.0.0
+
+# Additional utilities
+colorama>=0.4.5
+tabulate>=0.8.10 

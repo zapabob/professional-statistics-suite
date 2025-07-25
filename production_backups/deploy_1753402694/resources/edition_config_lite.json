@@ -1,0 +1,11 @@
+{
+  "edition": "Lite",
+  "version": "2.0.0",
+  "features": [
+    "basic"
+  ],
+  "trial": true,
+  "trial_days": 7,
+  "build_timestamp": "2025-06-19T04:52:25.302085",
+  "license_required": false
+}

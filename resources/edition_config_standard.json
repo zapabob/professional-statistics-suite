@@ -1,0 +1,12 @@
+{
+  "edition": "Standard",
+  "version": "2.0.0",
+  "features": [
+    "basic",
+    "advanced"
+  ],
+  "trial": false,
+  "trial_days": 14,
+  "build_timestamp": "2025-06-19T04:52:25.311119",
+  "license_required": true
+}

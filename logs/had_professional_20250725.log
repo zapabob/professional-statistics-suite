@@ -1,0 +1,4 @@
+2025-07-25 03:51:04,160 - HAD_Professional - INFO - PowerAnalysisEngine 初期化
+2025-07-25 03:51:05,474 - HAD_Professional - INFO - 深化ベイズ統計解析システム初期化 | random_seed: 42
+2025-07-25 03:51:05,560 - HAD_Professional - INFO - 完全生存解析システム初期化 | confidence_interval: 0.95
+2025-07-25 03:51:06,004 - HAD_Professional - INFO - 高度統計解析システム初期化 | cpu_cores: 12

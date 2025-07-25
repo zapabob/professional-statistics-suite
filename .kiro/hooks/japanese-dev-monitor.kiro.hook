@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Japanese Development Monitor",
+  "description": "Monitors Python files to ensure Japanese chat display, UTF-8 encoding compliance, py-3 script execution, casual Kansai dialect communication, and maintains implementation logs with yyyy-mm-dd format in _docs directory",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "professional-statistics-suite/*.py",
+      "professional-statistics-suite/_docs/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "おつかれさまやで！Pythonファイルが更新されたから、以下をチェックして実装ログを_docsに残すで：\n\n1. 日本語でチャット表示されてるか確認\n2. UTF-8エンコーディング（# -*- coding: utf-8 -*-）がファイル先頭にあるかチェック\n3. py -3でスクリプト起動できるように設定されてるか\n4. なんJ風の関西弁で話すスタイルになってるか\n5. _docs/implementation_log_yyyy-mm-dd.md に今日の実装ログを記録\n6. 起動時に過去のログを読んで参照するように実装\n\nガチで全力で深く考えて実装してや！手抜きは一切なしで頼むで！Don't hold back. Give it your all deep think!!"
+  }
+}

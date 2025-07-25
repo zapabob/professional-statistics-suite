@@ -1,0 +1,46 @@
+# Booth版専用依存関係
+# Core Protection Libraries
+cryptography>=41.0.0
+psutil>=5.9.0
+requests>=2.31.0
+
+# Standard Data Science Stack
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# GUI and Visualization
+PyQt5>=5.15.0
+plotly>=5.15.0
+dash>=2.11.0
+
+# AI/ML Optional (for AI integration)
+openai>=1.0.0
+google-generativeai>=0.3.0
+anthropic>=0.7.0
+
+# Image Processing (Optional)
+Pillow>=10.0.0
+opencv-python>=4.8.0
+# pytesseract>=0.3.10  # Optional OCR
+# easyocr>=1.7.0       # Optional OCR
+
+# Progress Bars
+tqdm>=4.65.0
+
+# Statistical Analysis
+statsmodels>=0.14.0
+pingouin>=0.5.3
+
+# Build Tools
+PyInstaller>=5.13.0
+# upx-ucl  # For additional compression (install separately)
+
+# Development Dependencies (不要な場合は削除)
+pytest>=7.4.0
+black>=23.7.0
+flake8>=6.0.0
+mypy>=1.5.0 

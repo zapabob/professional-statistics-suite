@@ -1,0 +1,362 @@
+{
+  "total_tests": 15,
+  "successful_tests": 15,
+  "failed_tests": 0,
+  "success_rate": 100.0,
+  "duration_seconds": 97.40342903137207,
+  "test_details": {
+    "ProfessionalStatisticsGUI_startup": {
+      "test_name": "ProfessionalStatisticsGUI_startup",
+      "start_time": "2025-07-25T07:30:43.914529",
+      "end_time": "2025-07-25T07:30:51.395428",
+      "duration_seconds": 7.480899,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "startup_time_seconds": 7.379318714141846,
+        "memory_usage_mb": 776.39453125,
+        "cpu_usage_percent": 5.6
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "ProfessionalStatisticsGUI_data": {
+      "test_name": "ProfessionalStatisticsGUI_large_data",
+      "start_time": "2025-07-25T07:30:51.395428",
+      "end_time": "2025-07-25T07:30:55.918691",
+      "duration_seconds": 4.523263,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "data_size_mb": 0.4197425842285156,
+        "load_time_seconds": 0.0,
+        "analysis_time_seconds": 0.0,
+        "total_processing_time_seconds": 0.0,
+        "memory_usage_mb": 781.9140625,
+        "cpu_usage_percent": 2.4
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "ProfessionalStatisticsGUI_response": {
+      "test_name": "ProfessionalStatisticsGUI_responsiveness",
+      "start_time": "2025-07-25T07:30:55.942242",
+      "end_time": "2025-07-25T07:31:00.369206",
+      "duration_seconds": 4.426964,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {},
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {
+        "average_response_time_ms": 0,
+        "max_response_time_ms": 0,
+        "min_response_time_ms": 0,
+        "buttons_tested": 0,
+        "response_times": [],
+        "button_test_results": [],
+        "total_buttons_found": 0
+      },
+      "data_processing_time": {}
+    },
+    "ProfessionalStatisticsGUI_memory": {
+      "test_name": "ProfessionalStatisticsGUI_memory_leak",
+      "start_time": "2025-07-25T07:31:00.392383",
+      "end_time": "2025-07-25T07:31:51.885986",
+      "duration_seconds": 51.493603,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {},
+      "memory_usage": {
+        "initial_memory_mb": 787.1875,
+        "final_memory_mb": 834.38671875,
+        "memory_increase_mb": 47.19921875,
+        "memory_growth_rate_mb_per_cycle": 4.290838068181818,
+        "memory_usage_history": [
+          787.1875,
+          791.89453125,
+          796.19140625,
+          801.33203125,
+          805.953125,
+          810.87109375,
+          815.3671875,
+          820.046875,
+          825.296875,
+          829.81640625,
+          834.38671875
+        ],
+        "potential_memory_leak": false
+      },
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "ProfessionalStatisticsGUI_error": {
+      "test_name": "ProfessionalStatisticsGUI_error_handling",
+      "start_time": "2025-07-25T07:31:51.886507",
+      "end_time": "2025-07-25T07:31:56.407364",
+      "duration_seconds": 4.520857,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "total_error_tests": 4,
+        "successful_error_handling": 4,
+        "failed_error_handling": 0,
+        "error_handling_rate": 100.0
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "UnifiedAILandingGUI_startup": {
+      "test_name": "UnifiedAILandingGUI_startup",
+      "start_time": "2025-07-25T07:31:56.435344",
+      "end_time": "2025-07-25T07:31:56.890683",
+      "duration_seconds": 0.455339,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "startup_time_seconds": 0.35439205169677734,
+        "memory_usage_mb": 843.23046875,
+        "cpu_usage_percent": 1.4
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "UnifiedAILandingGUI_data": {
+      "test_name": "UnifiedAILandingGUI_large_data",
+      "start_time": "2025-07-25T07:31:56.890683",
+      "end_time": "2025-07-25T07:31:57.348391",
+      "duration_seconds": 0.457708,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "data_size_mb": 0.4197425842285156,
+        "load_time_seconds": 0.0,
+        "analysis_time_seconds": 0.0,
+        "total_processing_time_seconds": 0.0,
+        "memory_usage_mb": 848.5,
+        "cpu_usage_percent": 20.5
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "UnifiedAILandingGUI_response": {
+      "test_name": "UnifiedAILandingGUI_responsiveness",
+      "start_time": "2025-07-25T07:31:57.367150",
+      "end_time": "2025-07-25T07:31:57.779664",
+      "duration_seconds": 0.412514,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {},
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {
+        "average_response_time_ms": 0,
+        "max_response_time_ms": 0,
+        "min_response_time_ms": 0,
+        "buttons_tested": 0,
+        "response_times": [],
+        "button_test_results": [],
+        "total_buttons_found": 0
+      },
+      "data_processing_time": {}
+    },
+    "UnifiedAILandingGUI_memory": {
+      "test_name": "UnifiedAILandingGUI_memory_leak",
+      "start_time": "2025-07-25T07:31:57.799206",
+      "end_time": "2025-07-25T07:32:08.718704",
+      "duration_seconds": 10.919498,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {},
+      "memory_usage": {
+        "initial_memory_mb": 851.30078125,
+        "final_memory_mb": 864.51171875,
+        "memory_increase_mb": 13.2109375,
+        "memory_growth_rate_mb_per_cycle": 1.2009943181818181,
+        "memory_usage_history": [
+          851.30078125,
+          851.75,
+          854.79296875,
+          856.09375,
+          857.26171875,
+          858.40625,
+          859.5234375,
+          860.66796875,
+          861.35546875,
+          863.06640625,
+          864.51171875
+        ],
+        "potential_memory_leak": false
+      },
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "UnifiedAILandingGUI_error": {
+      "test_name": "UnifiedAILandingGUI_error_handling",
+      "start_time": "2025-07-25T07:32:08.720807",
+      "end_time": "2025-07-25T07:32:09.174814",
+      "duration_seconds": 0.454007,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "total_error_tests": 4,
+        "successful_error_handling": 4,
+        "failed_error_handling": 0,
+        "error_handling_rate": 100.0
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "KiroIntegratedGUI_startup": {
+      "test_name": "KiroIntegratedGUI_startup",
+      "start_time": "2025-07-25T07:32:09.192544",
+      "end_time": "2025-07-25T07:32:09.638141",
+      "duration_seconds": 0.445597,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "startup_time_seconds": 0.344573974609375,
+        "memory_usage_mb": 872.19140625,
+        "cpu_usage_percent": 46.1
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "KiroIntegratedGUI_data": {
+      "test_name": "KiroIntegratedGUI_large_data",
+      "start_time": "2025-07-25T07:32:09.639179",
+      "end_time": "2025-07-25T07:32:10.074823",
+      "duration_seconds": 0.435644,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "data_size_mb": 0.4197425842285156,
+        "load_time_seconds": 0.0,
+        "analysis_time_seconds": 0.0,
+        "total_processing_time_seconds": 0.0,
+        "memory_usage_mb": 873.0390625,
+        "cpu_usage_percent": 8.2
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "KiroIntegratedGUI_response": {
+      "test_name": "KiroIntegratedGUI_responsiveness",
+      "start_time": "2025-07-25T07:32:10.090003",
+      "end_time": "2025-07-25T07:32:10.413828",
+      "duration_seconds": 0.323825,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {},
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {
+        "average_response_time_ms": 0,
+        "max_response_time_ms": 0,
+        "min_response_time_ms": 0,
+        "buttons_tested": 0,
+        "response_times": [],
+        "button_test_results": [],
+        "total_buttons_found": 0
+      },
+      "data_processing_time": {}
+    },
+    "KiroIntegratedGUI_memory": {
+      "test_name": "KiroIntegratedGUI_memory_leak",
+      "start_time": "2025-07-25T07:32:10.431065",
+      "end_time": "2025-07-25T07:32:20.874542",
+      "duration_seconds": 10.443477,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {},
+      "memory_usage": {
+        "initial_memory_mb": 874.3046875,
+        "final_memory_mb": 887.34375,
+        "memory_increase_mb": 13.0390625,
+        "memory_growth_rate_mb_per_cycle": 1.1853693181818181,
+        "memory_usage_history": [
+          874.3046875,
+          875.12890625,
+          877.15234375,
+          878.40234375,
+          879.19140625,
+          880.66015625,
+          882.33203125,
+          883.328125,
+          884.46875,
+          885.4453125,
+          887.34375
+        ],
+        "potential_memory_leak": false
+      },
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    },
+    "KiroIntegratedGUI_error": {
+      "test_name": "KiroIntegratedGUI_error_handling",
+      "start_time": "2025-07-25T07:32:20.876053",
+      "end_time": "2025-07-25T07:32:21.302856",
+      "duration_seconds": 0.426803,
+      "success": true,
+      "error_message": null,
+      "performance_metrics": {
+        "total_error_tests": 4,
+        "successful_error_handling": 4,
+        "failed_error_handling": 0,
+        "error_handling_rate": 100.0
+      },
+      "memory_usage": {},
+      "cpu_usage": {},
+      "gui_responsiveness": {},
+      "data_processing_time": {}
+    }
+  },
+  "performance_summary": {
+    "average_startup_time": 2.6927615801493325,
+    "average_memory_usage": 832.544921875,
+    "average_cpu_usage": 14.033333333333333,
+    "average_response_time": 0.0,
+    "memory_leaks_detected": 0,
+    "performance_issues": []
+  },
+  "performance_monitor_summary": {
+    "memory": {
+      "current_mb": 895.1015625,
+      "average_mb": 818.5631280974669,
+      "max_mb": 895.1015625,
+      "min_mb": 430.05859375
+    },
+    "cpu": {
+      "current_percent": 11.7,
+      "average_percent": 10.71850220264317,
+      "max_percent": 69.7,
+      "min_percent": 0.0
+    },
+    "disk": {
+      "current_percent": 83.4301754469485,
+      "average_percent": 83.43006675136326,
+      "max_percent": 83.43017790595717,
+      "min_percent": 83.42992626740391
+    },
+    "monitoring_duration_seconds": 97.59191656112671
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "user_id": "test_user",
+  "session_id": "session_20250725_035040",
+  "data_fingerprint": "test_data_v1",
+  "analysis_history": [
+    {
+      "timestamp": "2025-07-25T03:50:41.187107",
+      "analysis_type": "exploratory",
+      "method_used": "ai_response",
+      "success": false,
+      "query": "",
+      "provider": "unknown",
+      "processing_time": 0.0,
+      "tokens_consumed": 0
+    }
+  ],
+  "user_expertise_level": "intermediate",
+  "privacy_settings": {
+    "use_local_llm": false,
+    "anonymize_data": true
+  },
+  "timestamp": "2025-07-25T03:50:40.556463",
+  "user_preferences": {
+    "preferred_visualization": "plotly",
+    "explanation_style": "detailed",
+    "language": "ja",
+    "auto_save": true
+  },
+  "session_metadata": {
+    "platform": "Windows",
+    "start_time": "2025-07-25T03:50:40.556463",
+    "data_sources": [],
+    "analysis_goals": []
+  },
+  "context_tags": [],
+  "learning_progress": {},
+  "favorite_methods": [],
+  "recent_queries": []
+}

@@ -1,0 +1,32 @@
+{
+  "session_id": "513cdbeb-08cd-4fee-8476-c16c743a69e3",
+  "timestamp": "2025-07-25T16:50:38.282584",
+  "backup_type": "scheduled",
+  "providers": [
+    "google",
+    "ollama",
+    "lmstudio",
+    "koboldcpp"
+  ],
+  "context_manager_state": {
+    "user_id": "backup",
+    "session_id": "513cdbeb-08cd-4fee-8476-c16c743a69e3",
+    "session_start": "2025-07-25T16:50:38.282584",
+    "current_expertise_level": "intermediate",
+    "analysis_patterns": {},
+    "data_fingerprint": "backup",
+    "privacy_settings": {
+      "use_local_llm": false,
+      "anonymize_data": true
+    },
+    "user_preferences": {
+      "preferred_visualization": "plotly",
+      "explanation_style": "detailed",
+      "language": "ja",
+      "auto_save": true
+    },
+    "learning_progress": {},
+    "favorite_methods": [],
+    "context_tags": []
+  }
+}

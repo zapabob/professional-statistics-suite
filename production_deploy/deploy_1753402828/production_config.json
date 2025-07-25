@@ -1,0 +1,21 @@
+{
+  "environment": "production",
+  "deployment_id": "deploy_1753402828",
+  "deployment_time": "2025-07-25T09:20:28.588736",
+  "version": "1.0.0",
+  "features": {
+    "gui_responsiveness": true,
+    "ai_integration": true,
+    "data_processing": true,
+    "visualization": true
+  },
+  "performance": {
+    "max_memory_mb": 1000,
+    "max_cpu_percent": 80,
+    "response_time_threshold_ms": 100
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/production_deploy_1753402828.log"
+  }
+}

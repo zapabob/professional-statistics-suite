@@ -1,0 +1,60 @@
+# Professional Statistics Suite - 環境変数設定テンプレート
+# APIキーを安全に管理するための環境変数ファイル
+# このファイルは.gitignoreに含めて、Gitにコミットしないでください
+# 
+# 使用方法:
+# 1. このファイルを.envにコピー
+# 2. 各APIキーを実際の値に置き換え
+# 3. アプリケーションを起動
+
+# OpenAI API設定
+# https://platform.openai.com/api-keys で取得
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Google AI API設定
+# https://makersuite.google.com/app/apikey で取得
+GOOGLE_API_KEY=your_google_api_key_here
+
+# Anthropic Claude API設定
+# https://console.anthropic.com/ で取得
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Together AI API設定（オプション）
+# https://together.ai/ で取得
+TOGETHER_API_KEY=your_together_api_key_here
+
+# ローカルLLM設定
+# ローカルでLLMを実行する場合の設定
+OLLAMA_BASE_URL=http://localhost:11434
+LMSTUDIO_BASE_URL=http://localhost:1234/v1
+KOBOLDCPP_BASE_URL=http://localhost:5001/v1
+
+# システム設定
+# デフォルトのプロバイダーとモデル
+DEFAULT_PROVIDER=google
+DEFAULT_MODEL=gemini-1.5-pro-latest
+MAX_TOKENS=4096
+TEMPERATURE=0.1
+
+# プライバシー設定
+# データの機密性レベルに応じた設定
+USE_LOCAL_LLM=false
+ANONYMIZE_DATA=true
+PRIVACY_LEVEL=medium
+
+# パフォーマンス設定
+# システムリソースに応じた設定
+CPU_CORES=12
+GPU_ENABLED=true
+MEMORY_LIMIT=8192
+
+# ログ設定
+# ログレベルの設定
+LOG_LEVEL=INFO
+LOG_FILE=logs/professional_statistics_suite.log
+
+# バックアップ設定
+# 自動保存の設定
+AUTO_SAVE_INTERVAL=300
+MAX_BACKUPS=10
+BACKUP_DIR=unified_ai_backups 

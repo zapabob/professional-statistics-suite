@@ -1,0 +1,21 @@
+{
+  "session_id": "20250725_071742",
+  "timestamp": "20250725_071749",
+  "checkpoint_type": "gui_test_KiroIntegratedGUI_Buttons",
+  "test_state": {
+    "timestamp": "2025-07-25T07:17:49.872915",
+    "active_tests": [],
+    "test_results": {},
+    "gui_state": {},
+    "memory_usage": {
+      "rss": 899715072,
+      "vms": 3092017152,
+      "percent": 2.6289367716871395
+    }
+  },
+  "metadata": {
+    "python_version": "3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]",
+    "platform": "win32",
+    "working_directory": "C:\\Users\\downl\\Desktop\\professional-statistics-suite"
+  }
+}

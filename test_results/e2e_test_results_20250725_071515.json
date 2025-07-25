@@ -1,0 +1,15 @@
+{
+  "total_tests": 1,
+  "successful_tests": 1,
+  "failed_tests": 0,
+  "success_rate": 100.0,
+  "duration_seconds": 18.00728487968445,
+  "test_details": {
+    "AIIntegrationPipeline": {
+      "query_processed": true,
+      "ai_response_received": true,
+      "response_length": 224,
+      "pipeline_status": "success"
+    }
+  }
+}
