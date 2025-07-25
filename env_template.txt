@@ -1,0 +1,99 @@
+# Professional Statistics Suite - AI Integration Environment Variables
+# プロフェッショナル統計分析スイート - AI統合環境変数設定
+# このファイルを.envとしてコピーして使用してください
+
+# =============================================================================
+# OpenAI API Configuration (最新モデル対応)
+# =============================================================================
+# GPT-4o (最新モデル)
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL_GPT4O=gpt-4o
+OPENAI_MODEL_O3=o3
+
+# =============================================================================
+# Anthropic API Configuration (最新モデル対応)
+# =============================================================================
+# Claude 3.5 Sonnet (最新モデル)
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+ANTHROPIC_MODEL_CLAUDE_Opus=claude-4-Opus
+ANTHROPIC_MODEL_CLAUDE35_Sonnet=claude-4-Sonnet
+ANTHROPIC_MODEL_CLAUDE3_SONNET=claude-3.7-Sonnet
+# =============================================================================
+# Google AI Configuration (最新モデル対応)
+# =============================================================================
+# Gemini 1.5 Pro (最新モデル)
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_MODEL_GEMINI15_PRO=gemini-2.5-pro-latest
+GOOGLE_MODEL_GEMINI15_FLASH=gemini-2.5-flash-latest
+GOOGLE_MODEL_GEMINI_PRO=gemini-pro
+GOOGLE_MODEL_GEMINI_PRO_VISION=gemini-pro-vision
+
+# =============================================================================
+# Local LLM Configuration (ローカルLLM設定)
+# =============================================================================
+# Ollama Configuration
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL_LLAMA3=llama3
+OLLAMA_MODEL_LLAMA3_8B=llama3:8b
+OLLAMA_MODEL_LLAMA3_70B=llama3:70b
+OLLAMA_MODEL_PHI3=phi3
+OLLAMA_MODEL_MISTRAL=mistral
+OLLAMA_MODEL_CODESTRAL=codestral
+
+# LM Studio Configuration
+LMSTUDIO_BASE_URL=http://localhost:1234
+LMSTUDIO_MODELS_DIR=./models
+LMSTUDIO_DEFAULT_MODEL=your_default_gguf_model_filename_her
+
+# GGUF Direct Configuration
+GGUF_MODELS_DIR=./models
+# デフォルトモデルの設定（実際の値は環境に合わせて変更してください）
+GGUF_DEFAULT_MODEL=your_default_gguf_model_filename_here
+GGUF_N_CTX=4096
+GGUF_N_GPU_LAYERS=0
+
+# KoboldCpp Configuration
+KOBOLDCPP_BASE_URL=http://localhost:5001
+KOBOLDCPP_DEFAULT_MODEL=your_default_gguf_model_filename_here
+
+
+# =============================================================================
+# Advanced Configuration (高度な設定)
+# =============================================================================
+# RAG Configuration
+RAG_ENABLED=true
+RAG_TOP_K=3
+RAG_CHUNK_SIZE=500
+RAG_OVERLAP=50
+
+# Self-Correction Configuration
+SELF_CORRECTION_ENABLED=true
+SELF_CORRECTION_MAX_ATTEMPTS=3
+SELF_CORRECTION_CONFIDENCE_THRESHOLD=0.8
+
+# Privacy Configuration
+PRIVACY_LEVEL=medium
+ANONYMIZE_DATA=true
+USE_LOCAL_LLM_FOR_SENSITIVE=true
+
+# Performance Configuration
+GPU_ACCELERATION_ENABLED=true
+CUDA_VISIBLE_DEVICES=0
+MAX_CONCURRENT_REQUESTS=5
+REQUEST_TIMEOUT=30
+
+# =============================================================================
+# Backup and Checkpoint Configuration
+# =============================================================================
+CHECKPOINT_INTERVAL=300
+MAX_BACKUPS=10
+BACKUP_RETENTION_DAYS=30
+EMERGENCY_SAVE_ENABLED=true
+
+# =============================================================================
+# Development Configuration
+# =============================================================================
+DEBUG_MODE=false
+LOG_LEVEL=INFO
+PROFILING_ENABLED=false 

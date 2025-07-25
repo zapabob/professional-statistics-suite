@@ -2542,19 +2542,15 @@ Anderson-Darling: 統計量 = {res['AD_stat']:.4f}
                 
                 # 全組み合わせでt検定実行
                 from itertools import combinations
-                    result_text = f"✅ 特徴量エンジニアリング完了\n"
-                    result_text += f"新規特徴量: {summary['new_features_count']}個\n\n"
-                    result_text += "作成された特徴量:\n"
-                    for feature in summary['new_feature_names'][:10]:  # 最初の10個を表示
-                        result_text += f"• {feature}\n"
-                    
-                    self.result_text.delete("1.0", "end")
-                    self.result_text.insert("1.0", result_text)
-            else:
-                messagebox.showerror("Error", summary["error"])
+                
+                # ここに多重t検定のロジックを実装する予定です
+                result_text = "多重t検定のロジックはまだ実装されていません。"
+                
+                self.result_text.delete("1.0", "end")
+                self.result_text.insert("1.0", result_text)
                 
         except Exception as e:
-            messagebox.showerror("Error", f"特徴量エンジニアリングエラー: {str(e)}")
+            messagebox.showerror("Error", f"多重t検定エラー: {str(e)}")
     
     def feature_selection(self):
         """特徴量選択"""

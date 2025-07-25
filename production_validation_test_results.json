@@ -1,10 +1,10 @@
 {
-  "timestamp": "2025-07-25T20:48:14.700036",
+  "timestamp": "2025-07-25T20:54:37.276121",
   "overall_success": true,
   "success_rate": 83.33333333333334,
   "successful_tests": 5,
   "total_tests": 6,
-  "execution_time": 1.4410531520843506,
+  "execution_time": 27.956172227859497,
   "test_results": [
     {
       "name": "本番環境起動",
@@ -25,11 +25,11 @@
       "result": {
         "success": false,
         "errors": [
-          "src.core.config: unexpected indent (main.py, line 2545)",
-          "src.data.data_preprocessing: unexpected indent (main.py, line 2545)",
-          "src.statistics.advanced_statistics: unexpected indent (main.py, line 2545)",
-          "src.gui.professional_statistics_gui: unexpected indent (main.py, line 2545)",
-          "src.ai.ai_integration: unexpected indent (main.py, line 2545)"
+          "src.core.config: 'cp932' codec can't encode character '\\u26a0' in position 0: illegal multibyte sequence",
+          "src.data.data_preprocessing: 'cp932' codec can't encode character '\\u26a0' in position 0: illegal multibyte sequence",
+          "src.statistics.advanced_statistics: 'cp932' codec can't encode character '\\u26a0' in position 0: illegal multibyte sequence",
+          "src.gui.professional_statistics_gui: 'cp932' codec can't encode character '\\u26a0' in position 0: illegal multibyte sequence",
+          "src.ai.ai_integration: 'cp932' codec can't encode character '\\u26a0' in position 0: illegal multibyte sequence"
         ]
       }
     },

@@ -1596,6 +1596,402 @@ Ready for professional statistical analysis! 🚀
         except Exception as e:
             messagebox.showerror("Recovery Error", f"Failed to restore session: {e}")
     
+    def save_session(self):
+        """セッション保存"""
+        try:
+            session_data = {
+                'timestamp': datetime.now().isoformat(),
+                'settings': self.user_settings,
+                'analysis_results': self.analysis_results
+            }
+            
+            if self.current_data is not None:
+                session_data['data'] = self.current_data.to_dict()
+            
+            self.session_manager.save_session(session_data)
+            messagebox.showinfo("セッション保存", "セッションが正常に保存されました")
+        except Exception as e:
+            messagebox.showerror("セッション保存エラー", f"セッション保存中にエラーが発生しました: {e}")
+    
+    def variable_selection(self):
+        """変数選択"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            window = VariableSelectionWindow(self.root, self.current_data, self._on_variable_selection)
+            window.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"変数選択ウィンドウの作成に失敗しました: {e}")
+    
+    def _on_variable_selection(self, selection):
+        """変数選択コールバック"""
+        self.control_variables = selection.get('control', [])
+        self.target_variables = selection.get('target', [])
+        self.residual_variables = selection.get('residual', [])
+        self.variable_selection_applied = True
+        self._update_data_info()
+        self._update_status("変数選択が適用されました")
+    
+    def ai_analysis(self):
+        """AI分析"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            window = AIAnalysisWindow(self.root, self.current_data)
+            window.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"AI分析ウィンドウの作成に失敗しました: {e}")
+    
+    def regression_analysis(self):
+        """回帰分析"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("回帰分析", "回帰分析機能は開発中です")
+    
+    def machine_learning(self):
+        """機械学習"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            window = MLAnalysisWindow(self.root, self.current_data, {
+                'control': self.control_variables,
+                'target': self.target_variables,
+                'residual': self.residual_variables
+            })
+            window.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"機械学習ウィンドウの作成に失敗しました: {e}")
+    
+    def deep_learning(self):
+        """深層学習"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            window = DeepLearningWindow(self.root, self.current_data, {
+                'control': self.control_variables,
+                'target': self.target_variables,
+                'residual': self.residual_variables
+            })
+            window.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"深層学習ウィンドウの作成に失敗しました: {e}")
+    
+    def create_correlation_heatmap(self):
+        """相関ヒートマップ作成"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            plt.figure(figsize=(10, 8))
+            sns.heatmap(self.current_data.corr(), annot=True, cmap='coolwarm', center=0)
+            plt.title("Correlation Heatmap")
+            plt.tight_layout()
+            plt.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"相関ヒートマップの作成に失敗しました: {e}")
+    
+    def create_scatter_matrix(self):
+        """散布図行列作成"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            pd.plotting.scatter_matrix(self.current_data, figsize=(12, 12))
+            plt.suptitle("Scatter Matrix")
+            plt.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"散布図行列の作成に失敗しました: {e}")
+    
+    def create_distribution_plots(self):
+        """分布プロット作成"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            n_cols = len(self.current_data.select_dtypes(include=[np.number]).columns)
+            fig, axes = plt.subplots(2, (n_cols + 1) // 2, figsize=(15, 8))
+            axes = axes.flatten()
+            
+            for i, col in enumerate(self.current_data.select_dtypes(include=[np.number]).columns):
+                axes[i].hist(self.current_data[col], bins=20, alpha=0.7)
+                axes[i].set_title(f"Distribution of {col}")
+                axes[i].set_xlabel(col)
+                axes[i].set_ylabel("Frequency")
+            
+            plt.tight_layout()
+            plt.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"分布プロットの作成に失敗しました: {e}")
+    
+    def create_box_plots(self):
+        """箱ひげ図作成"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            numeric_cols = self.current_data.select_dtypes(include=[np.number]).columns
+            plt.figure(figsize=(12, 6))
+            self.current_data[numeric_cols].boxplot()
+            plt.title("Box Plots")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            plt.show()
+        except Exception as e:
+            messagebox.showerror("エラー", f"箱ひげ図の作成に失敗しました: {e}")
+    
+    def create_time_series_plot(self):
+        """時系列プロット作成"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            numeric_cols = self.current_data.select_dtypes(include=[np.number]).columns
+            if len(numeric_cols) > 0:
+                plt.figure(figsize=(12, 6))
+                for col in numeric_cols[:5]:  # 最大5列まで
+                    plt.plot(self.current_data[col], label=col)
+                plt.title("Time Series Plot")
+                plt.xlabel("Index")
+                plt.ylabel("Value")
+                plt.legend()
+                plt.tight_layout()
+                plt.show()
+            else:
+                messagebox.showwarning("警告", "数値データが見つかりません")
+        except Exception as e:
+            messagebox.showerror("エラー", f"時系列プロットの作成に失敗しました: {e}")
+    
+    def create_feature_importance_plot(self):
+        """特徴量重要度プロット作成"""
+        messagebox.showinfo("特徴量重要度", "特徴量重要度プロット機能は開発中です")
+    
+    def create_roc_curve(self):
+        """ROC曲線作成"""
+        messagebox.showinfo("ROC曲線", "ROC曲線機能は開発中です")
+    
+    def detect_outliers(self):
+        """外れ値検出"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("外れ値検出", "外れ値検出機能は開発中です")
+    
+    def remove_outliers(self):
+        """外れ値除去"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("外れ値除去", "外れ値除去機能は開発中です")
+    
+    def handle_missing_values(self):
+        """欠損値処理"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("欠損値処理", "欠損値処理機能は開発中です")
+    
+    def transform_data(self):
+        """データ変換"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("データ変換", "データ変換機能は開発中です")
+    
+    def feature_engineering(self):
+        """特徴量エンジニアリング"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("特徴量エンジニアリング", "特徴量エンジニアリング機能は開発中です")
+    
+    def data_quality_check(self):
+        """データ品質チェック"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        try:
+            # 基本的なデータ品質チェック
+            info = f"""
+データ品質レポート:
+================
+行数: {len(self.current_data)}
+列数: {len(self.current_data.columns)}
+欠損値: {self.current_data.isnull().sum().sum()}
+重複行: {self.current_data.duplicated().sum()}
+メモリ使用量: {self.current_data.memory_usage(deep=True).sum() / 1024 / 1024:.2f} MB
+
+データ型:
+{self.current_data.dtypes.value_counts()}
+"""
+            messagebox.showinfo("データ品質チェック", info)
+        except Exception as e:
+            messagebox.showerror("エラー", f"データ品質チェックに失敗しました: {e}")
+    
+    def generate_professional_report(self):
+        """プロフェッショナルレポート生成"""
+        messagebox.showinfo("レポート生成", "プロフェッショナルレポート生成機能は開発中です")
+    
+    def show_performance_report(self):
+        """パフォーマンスレポート表示"""
+        messagebox.showinfo("パフォーマンスレポート", "パフォーマンスレポート機能は開発中です")
+    
+    def show_gpu_status(self):
+        """GPU状態表示"""
+        try:
+            if CUDA_AVAILABLE:
+                gpu_info = f"""
+GPU情報:
+========
+GPU: {GPU_NAME}
+CUDA利用可能: はい
+デバイス: {DEVICE}
+"""
+            else:
+                gpu_info = "GPU: 利用不可"
+            
+            messagebox.showinfo("GPU状態", gpu_info)
+        except Exception as e:
+            messagebox.showerror("エラー", f"GPU状態の取得に失敗しました: {e}")
+    
+    def show_memory_usage(self):
+        """メモリ使用量表示"""
+        try:
+            memory = psutil.virtual_memory()
+            info = f"""
+メモリ使用量:
+============
+総メモリ: {memory.total / 1024 / 1024 / 1024:.1f} GB
+使用メモリ: {memory.used / 1024 / 1024 / 1024:.1f} GB
+空きメモリ: {memory.available / 1024 / 1024 / 1024:.1f} GB
+使用率: {memory.percent:.1f}%
+"""
+            messagebox.showinfo("メモリ使用量", info)
+        except Exception as e:
+            messagebox.showerror("エラー", f"メモリ使用量の取得に失敗しました: {e}")
+    
+    def multivariate_analysis(self):
+        """多変量解析"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("多変量解析", "多変量解析機能は開発中です")
+    
+    def time_series_analysis(self):
+        """時系列解析"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("時系列解析", "時系列解析機能は開発中です")
+    
+    def survival_analysis(self):
+        """生存時間解析"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("生存時間解析", "生存時間解析機能は開発中です")
+    
+    def bayesian_analysis(self):
+        """ベイズ解析"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("ベイズ解析", "ベイズ解析機能は開発中です")
+    
+    def comprehensive_eda(self):
+        """包括的探索的データ解析"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        messagebox.showinfo("包括的EDA", "包括的探索的データ解析機能は開発中です")
+    
+    def visualization_menu(self):
+        """可視化メニュー"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        # 可視化オプションの選択ダイアログ
+        options = [
+            "相関ヒートマップ",
+            "散布図行列", 
+            "分布プロット",
+            "箱ひげ図",
+            "時系列プロット"
+        ]
+        
+        choice = self._get_single_choice("可視化メニュー", options)
+        
+        if choice == "相関ヒートマップ":
+            self.create_correlation_heatmap()
+        elif choice == "散布図行列":
+            self.create_scatter_matrix()
+        elif choice == "分布プロット":
+            self.create_distribution_plots()
+        elif choice == "箱ひげ図":
+            self.create_box_plots()
+        elif choice == "時系列プロット":
+            self.create_time_series_plot()
+    
+    def preprocessing_menu(self):
+        """前処理メニュー"""
+        if self.current_data is None:
+            messagebox.showwarning("警告", "データが読み込まれていません")
+            return
+        
+        # 前処理オプションの選択ダイアログ
+        options = [
+            "データ品質チェック",
+            "外れ値検出",
+            "外れ値除去",
+            "欠損値処理",
+            "データ変換",
+            "特徴量エンジニアリング",
+            "特徴量選択"
+        ]
+        
+        choice = self._get_single_choice("前処理メニュー", options)
+        
+        if choice == "データ品質チェック":
+            self.data_quality_check()
+        elif choice == "外れ値検出":
+            self.detect_outliers()
+        elif choice == "外れ値除去":
+            self.remove_outliers()
+        elif choice == "欠損値処理":
+            self.handle_missing_values()
+        elif choice == "データ変換":
+            self.transform_data()
+        elif choice == "特徴量エンジニアリング":
+            self.feature_engineering()
+        elif choice == "特徴量選択":
+            self.feature_selection()
+    
     def load_data(self):
         """データ読み込み"""
         file_path = filedialog.askopenfilename(

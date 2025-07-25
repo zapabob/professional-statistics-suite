@@ -910,7 +910,7 @@ class AIConfig:
                 yaml.dump(config, f, default_flow_style=False, 
                          allow_unicode=True, sort_keys=False)
         except Exception as e:
-            print(f"設定保存エラー: {e}")
+            print(f" 緊急保存失敗: {e}")
     
     def get_spss_grade_features(self) -> Dict[str, bool]:
         """SPSS級機能一覧"""
@@ -1059,7 +1059,7 @@ def initialize_spss_grade_environment():
     # Save configurations
     ai_config.save_config()
     
-    print("✅ SPSS級環境の初期化が完了しました！")
+    print(" SPSS級環境の初期化が完了しました！")
     print(get_hardware_summary())
 
 if __name__ == "__main__":
